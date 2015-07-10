@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addons>
+<addon id="plugin.video.andersonguimaraes" name="Anderson GuimarÃ£es" version="2.0.0" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.addon.common" version="2.0.0"/>
+    <import addon="plugin.video.youtube" version="5.0.0"/>
+  </requires>
+
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Anderson GuimarÃ£es</summary>
+    <description lang="en">Canal do Youtube Anderson GuimarÃ£es com dicas, truques e tutoriais para Kodi agora diretamente no Kodi</description>
+    <platform>all</platform>
+    <forum></forum>
+    <website></website>
+  </extension>
+</addon>
+
+<addon id="plugin.video.olhardigital" name="Olhar Digital" version="2.0.0" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.addon.common" version="2.0.0"/>
+    <import addon="plugin.video.youtube" version="5.0.0"/>
+  </requires>
+
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Olhar Digital</summary>
+    <description lang="en">Acompanhe na integra ao programa semanal do Olhar Digital Plus.</description>
+    <platform>all</platform>
+    <forum></forum>
+    <website></website>
+  </extension>
+</addon>
+
+<addon id="plugin.video.PortadosFundos"
+	name="Porta dos Fundos"
+	version="1.0.0"
+	provider-name="wanilton">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="plugin.video.youtube" version="3.0.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Porta dos Fundos</summary>
+    <description lang="en">VÃ­deos do Canal Porta dos Fundos no Youtube.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="repository.addonBrasil" name="RepositÃ³rio de Addons AddonBrasil" version="0.0.1" provider-name="AddonBrasil">
+	<extension point="xbmc.addon.repository" name="RepositÃ³rio de addons AddonBrasil">
+		<info compressed="false">http://raw.github.com/addonBrasil/addonBrasil-kodi/master/addons.xml</info>
+		<checksum>http://raw.github.com/addonBrasil/addonBrasil-kodi/master/addons.xml.md5</checksum>
+		<datadir zip="true">http://raw.github.com/addonBrasil/addonBrasil-kodi/master/repo/</datadir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>RepositÃ³rio AddonBrasil</summary>
+		<description>RepositÃ³rio AddonBrasil</description>
+		<disclaimer></disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
+</addons>
