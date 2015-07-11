@@ -8,6 +8,7 @@
 
 import os
 import sys
+import time
 import plugintools
 import xbmc,xbmcaddon
 from addon.common.addon import Addon
@@ -18,22 +19,22 @@ local = xbmcaddon.Addon(id=addonID)
 icon = local.getAddonInfo('icon')
 
 addonfolder = local.getAddonInfo('path')
-resfolder = addonfolder + '\\resources'
-
+resfolder = addonfolder + '/resources/'
+entryurl=resfolder+"entrada.mp4"
 
 YOUTUBE_CHANNEL_ID = "andersonrel"
 
 # Ponto de Entrada
 def run():
-	plugintools.log("andersonrel.run")
-
-	entryurl=str(resfolder)+"\\entrada.mp4"
-	plugintools.direct_play(str(entryurl))
-
 	# Pega Parâmetros
 	params = plugintools.get_params()
-
+	
 	if params.get("action") is None:
+		xbmc.Player(xbmc.PLAYER_CORE_AUTO).play(entryurl)
+		
+		while xbmc.Player().isPlaying():
+			time.sleep(1)
+
 		main_list(params)
 	else:
 		action = params.get("action")
@@ -43,12 +44,17 @@ def run():
 
 # Menu Principal
 def main_list(params):
-    plugintools.log("andersonrel.main_list "+repr(params))
+	plugintools.log("andersonrel.main_list "+repr(params))
+	
+	plugintools.log("andersonrel.run")
+	
+	#plugintools.direct_play(str(entryurl))
 
-    plugintools.add_item(
-				title = "Canal do Anderson Guimarães",
-        url = "plugin://plugin.video.youtube/user/"+YOUTUBE_CHANNEL_ID+"/",
-        thumbnail = icon,
-        folder = True )
+	plugintools.add_item(
+		title = "Canal do Anderson Guimarães",
+		url = "plugin://plugin.video.youtube/user/"+YOUTUBE_CHANNEL_ID+"/",
+		thumbnail = icon,
+		folder = True )
+		
 
 run()
