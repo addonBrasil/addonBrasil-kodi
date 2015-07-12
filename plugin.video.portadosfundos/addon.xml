@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.PortadosFundos"
-	name="Porta dos Fundos"
-	version="1.0.0"
-	provider-name="wanilton">
+<addon id="plugin.video.PortadosFundos" name="Porta dos Fundos" version="1.0.0" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="plugin.video.youtube" version="3.0.0"/>
@@ -12,7 +9,7 @@
   </extension>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Porta dos Fundos</summary>
-    <description lang="en">Vídeos do Canal Porta dos Fundos no Youtube.</description>
+    <description lang="en">Esse é o canal Porta dos Fundos. Lançamos vídeos originais, inéditos e exclusivos sempre às segundas, quintas e sábados às 11h. :-)</description>
     <platform>all</platform>
   </extension>
 </addon>
