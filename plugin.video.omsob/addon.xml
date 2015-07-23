@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.omsob" name="O Mundo Segundo os Brasileiros" version="1.0.0" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.addon.common" version="2.0.0"/>
+    <import addon="plugin.video.youtube" version="5.0.0"/>
+  </requires>
+	
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+	
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">O Mundo Segundo os Brasileiros</summary>
+    <description lang="en">Embarque numa viagem pelos quatro cantos do planeta, sem sair de casa.	
+			A série percorre os principais roteiros turísticos do mundo, lugares muitas vezes longínquos, pouco explorados e repletos de descobertas e contrastes.</description>
+    <platform>all</platform>
+    <forum></forum>
+    <website></website>
+  </extension>
+</addon>

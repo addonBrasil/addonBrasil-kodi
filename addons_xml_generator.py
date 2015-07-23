@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # *
 # *  Copyright (C) 2012-2013 Garrett Brown
 # *  Copyright (C) 2010      j48antialias
@@ -21,7 +22,7 @@
 # *  https://anarchintosh-projects.googlecode.com/files/addons_xml_generator.py
  
 """ addons.xml generator """
- 
+
 import os
 import sys
  

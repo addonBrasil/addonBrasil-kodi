@@ -20,6 +20,24 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.arquivobrasil" name="Arquivo Brasil" version="1.0.1" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+
+  <extension point="xbmc.python.pluginsource" library="addon.py">
+    <provides>video</provides>
+  </extension>
+
+  <extension point="xbmc.addon.metadata">
+    <language>en</language>
+    <platform>all</platform>
+    <summary lang="en"></summary>
+    <description lang="en"></description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.olhardigital" name="Olhar Digital" version="2.0.0" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
@@ -34,6 +52,27 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Olhar Digital</summary>
     <description lang="en">Acompanhe na integra ao programa semanal do Olhar Digital Plus.</description>
+    <platform>all</platform>
+    <forum></forum>
+    <website></website>
+  </extension>
+</addon>
+
+<addon id="plugin.video.omsob" name="O Mundo Segundo os Brasileiros" version="1.0.0" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.addon.common" version="2.0.0"/>
+    <import addon="plugin.video.youtube" version="5.0.0"/>
+  </requires>
+
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">O Mundo Segundo os Brasileiros</summary>
+    <description lang="en">Embarque numa viagem pelos quatro cantos do planeta, sem sair de casa.
+			A sÃ©rie percorre os principais roteiros turÃ­sticos do mundo, lugares muitas vezes longÃ­nquos, pouco explorados e repletos de descobertas e contrastes.</description>
     <platform>all</platform>
     <forum></forum>
     <website></website>
