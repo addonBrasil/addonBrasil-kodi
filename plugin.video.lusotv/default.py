@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#
+# By AddonBrasil
 ###############################################################################
 
 import xbmc,xbmcaddon,xbmcgui,xbmcplugin,urllib,urllib2,os,re,sys,datetime,time
@@ -27,7 +27,7 @@ def getCanais(url, group):
 				
 				if str(group) == str(params[0]) :
 						nome = params[1]
-						img = art + params[2] #.replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
+						img = art + params[2] 
 						links = params[3].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').rstrip()
 						addDir2(nome, links, 100, img)
 							
@@ -98,27 +98,27 @@ group     = None
 mode      = None
 tamanhoparavariavel=None
 
-try: url=urllib.unquote_plus(params["url"])
-except: pass
-try: tamanhoparavariavel=urllib.unquote_plus(params["tamanhof"])
-except: pass
-try: iconimage = urllib.unquote_plus(params["iconimage"])
-except: pass
-try: group = int(params["group"])
-except: pass
-try: name=urllib.unquote_plus(params["name"])
-except: pass
-try: mode=int(params["mode"])
-except: pass
+try    : url = urllib.unquote_plus(params["url"])
+except : pass
+try    : tamanhoparavariavel = urllib.unquote_plus(params["tamanhof"])
+except : pass
+try    : iconimage = urllib.unquote_plus(params["iconimage"])
+except : pass
+try    : group = int(params["group"])
+except : pass
+try    : name = urllib.unquote_plus(params["name"])
+except : pass
+try    : mode = int(params["mode"])
+except : pass
 
 ###############################################################################
 
-print "Mode : " + str(mode)
-print "Icon : " + str(iconimage)
-print "Group: " + str(group)
-print "URL  : " + str(url)
-print "Name : " + str(name)
-print "Var  : " + str(tamanhoparavariavel)
+#print "Mode : " + str(mode)
+#print "Icon : " + str(iconimage)
+#print "Group: " + str(group)
+#print "URL  : " + str(url)
+#print "Name : " + str(name)
+#print "Var  : " + str(tamanhoparavariavel)
 
 if mode   == None : menuPrincipal()
 elif mode == 10   : getCanais(url, group)
