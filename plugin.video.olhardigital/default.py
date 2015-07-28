@@ -12,7 +12,7 @@ import plugintools
 import xbmc,xbmcaddon
 from addon.common.addon import Addon
 
-addonID = 'plugin.video.andersonguimaraes'
+addonID = 'plugin.video.olhardigital'
 addon = Addon(addonID, sys.argv)
 local = xbmcaddon.Addon(id=addonID)
 icon = local.getAddonInfo('icon')

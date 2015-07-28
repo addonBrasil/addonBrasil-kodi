@@ -1,18 +1,17 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright 2015 AddonBrasil
-#
+# By AddonBrasil - 28/07/2015
 #####################################################################
 
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmc,xbmcaddon,HTMLParser
-import httplib, mechanize, base64
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmc,xbmcaddon,HTMLParser,os
+import httplib
 
 from urlparse      import urlparse
 from BeautifulSoup import BeautifulSoup
-#from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
 
 h = HTMLParser.HTMLParser()
 
-versao      = '1.0.1'
+versao      = '1.1.0'
 addon_id    = 'plugin.video.arquivobrasil'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
 addonfolder = selfAddon.getAddonInfo('path')
@@ -21,7 +20,7 @@ icon      = addonfolder + '/icon.png'
 fanart    = addonfolder + '/fanart.jpg'
 artfolder = addonfolder + '/resources/art/'
 
-base = 'https://www.assistirnovelas.tv'
+base = 'http://novelasgravadas.net/'
 
 #####################################################################
 
@@ -37,129 +36,86 @@ def menuPrincipal():
 def getListaCat(url, name):
 		link = openURL(url)
 		soup = BeautifulSoup(link)
+		conteudo = soup("div", {"id": "navigation"})
 		
-		conteudo = soup("div", {"class": "Box"})
+		listaGeral = conteudo[0]("ul", {"class": "sub-menu"} )
 		
-		if name   == 'Novelas'    : temp = conteudo[0]
-		elif name == 'Séries'     : temp = conteudo[1]
-		elif name == 'Jornalismo' : temp = conteudo[2]
-		elif name == 'Variedades' : temp = conteudo[3]
-		elif name == 'Esportes'   : temp = conteudo[4]
+		if name   == 'Novelas'    : temp = listaGeral[0]
+		elif name == 'Séries'     : temp = listaGeral[1]
+		elif name == 'Jornalismo' : temp = listaGeral[2]
+		elif name == 'Variedades' : temp = listaGeral[3]
+		elif name == 'Esportes'   : temp = listaGeral[4]
 		
-		listaCateg = temp("li")
+		categorias = temp("li")
 		
-		totLista = len(listaCateg)
+		totCategorias = len(categorias)
 		
-		for categoria in listaCateg:
-				titcat = categoria.img["alt"].replace('Assistir ', '').encode('utf-8')
+		for categoria in categorias:
+				titcat = categoria.text.replace('&#038;','&').encode('utf-8', 'ignore')
 				urlcat = categoria.a["href"]
-				imgcat = categoria.img["src"]
-				addDir(titcat, urlcat, 20, imgcat, totLista, True)				
+				imgcat = artfolder + getImg(titcat) + '.png'
+				addDir(titcat, urlcat, 20, imgcat, totCategorias, True)				
 
 		xbmc.executebuiltin('Container.SetViewMode(500)')
 		
 def getVideosCat(url, name, iconimage):
-		link   = openURL(url)
-		soup   = BeautifulSoup(link)
-		videos = soup("div", {"class": "Imagem"})
-
+		link  = openURL(url)
+		soup  = BeautifulSoup(link)
+		
+		conteudo = soup("div", {"class": "block archive"})
+		videos   = conteudo[0]("div", {"class": "block-image"})
+		
 		totVideos = len(videos)
-
+		
 		for video in videos:
 				url = video.a["href"]
-				tit = video.img["alt"].replace('Assistir ', '').encode('utf-8', 'ignore')
+				tit = video.img["alt"].replace('&#038;','&').replace('&#8211;',"-").replace(' de ',' - ').replace(' Completo','').encode('utf-8', 'ignore')
 				img = video.img["src"] 
 				addDir(tit, url, 100, img, False, totVideos)
-
-		try:
-				pagina = BeautifulSoup(soup.find('div', { "class" : "Paginacao" }).prettify())("a", { "class" : "right" })[0]["href"]
-				addDir("Proxima Pagina >>", pagina, 20, artfolder + "proxima.jpg", totVideos + 1)
-		except:
-				pass				
+				
+		try :
+				page = re.compile("<span class='current'>.+?</span><a href='(.+?)' class='inactive' >.+?</a>").findall(link)
+				
+				for prox_pagina in page:
+						addDir('Página Seguinte >>',prox_pagina,20,artfolder + 'prox.jpg')
+						break
+		except :
+				pass
 				
 		xbmc.executebuiltin('Container.SetViewMode(50)')
 
 def doPlay(url, name):
+		link = openURL(url)
+
 		pg = 0
 		msgDialog = xbmcgui.DialogProgress()
 
-		msgDialog.create('ARQUIVO BRASIL', 'Criando Playlist',name,'Por favor aguarde...')
-		pg += 10
-		msgDialog.update(pg)
-		
-		link = openURL(url)
-		soup = BeautifulSoup(link)
+		msgDialog.create('ARQUIVO BRASIL', 'Abrindo Sinal', name, 'Por favor aguarde...')
+		msgDialog.update(25)
 		
 		playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 		playlist.clear()
 
-		pg += 20
-		msgDialog.update(pg)
-
-		browser = mechanize.Browser()
+		msgDialog.update(50)
 		
-		browser.set_handle_equiv(True)
-		browser.set_handle_redirect(True)
-		browser.set_handle_referer(True)
-		browser.set_handle_robots(False)
-		browser.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+		try :
+				url2Rslv = re.findall('<IFRAME SRC="(.*?)" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=645 HEIGHT=355></IFRAME>', link)[0]
+				url2Play = getURL2Play(url2Rslv)
+		except:
+				url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
+				linkRslv = openURL(url2Rslv)
+				url2Play = re.findall('<location>(.*?)</location>', linkRslv)[0]
 		
-		browser.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-		browser.addheaders = [('Referer', url)]
+		msgDialog.update(75)
 		
-		pg += 20
-		msgDialog.update(pg)
-		
-		browser.open(base)
-		form = base64.b64decode('PGZvcm0gYWN0aW9uPSJodHRwczovL2Fzc2lzdGlybm92ZWxhcy50di9Mb2dpblVzdWFyaW8ucGhwIiBpZD0iZm9ybTEiIG1ldGhvZD0icG9zdCI+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxsaT5FLW1haWw8L2xpPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8bGk+PGlucHV0IHR5cGU9InRleHQiIHZhbHVlPSIiIG5hbWU9ImVtYWlsIiBjbGFzcz0iQ2FtcG9Mb2dpbiIgcGxhY2Vob2xkZXI9IlNldSBlLW1haWwiPjwvbGk+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxsaT5TZW5oYTwvbGk+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxsaT48aW5wdXQgdmFsdWU9IiIgbmFtZT0ic2VuaGEiIGNsYXNzPSJDYW1wb0xvZ2luIiBwbGFjZWhvbGRlcj0iU3VhIHNlbmhhIiB0eXBlPSJwYXNzd29yZCI+PC9saT4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPGxpPjxpbnB1dCB0eXBlPSJzdWJtaXQiIGNsYXNzPSJMb2dpbkluaWNpbyIgdmFsdWU9IkVudHJhciI+PC9saT4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPGxpPjxhIGhyZWY9Imh0dHBzOi8vYXNzaXN0aXJub3ZlbGFzLnR2L2NhZGFzdHJvLnBocCI+UmVnaXN0cmFyPC9hPjwvbGk+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxsaT48YSBocmVmPSJodHRwczovL2Fzc2lzdGlybm92ZWxhcy50di9sZW1icmFyX3NlbmhhLnBocCI+TGVtYnJhciBzZW5oYTwvYT48L2xpPg0KICAgICAgICAgICAgICAgICAgPC9mb3JtPg==')
-		res  = mechanize._form.ParseString(form, base)
-		
-		browser.form = res[1]
-		
-		browser.form['senha'] = base64.b64decode('YXJhbW9zIUAj')
-		browser.form['email'] = base64.b64decode('YWRtaW5AYWRkb25icmFzaWwudGs=')
-		browser.submit()
-
-		pg += 20
-		msgDialog.update(pg)
-
-		pgbrowser = browser.open(url).read()
-		iframe    = re.findall("var url = '(.*?)'", pgbrowser)[0]+"html5iframe/"
-		
-		pglinks = browser.open(iframe).read()
-		
-		vars = re.findall("var (.*?) \= \[(.*?)\]", pglinks)
-		
-		decvars = []
-		
-		x = 0
-		
-		for x in range(len(vars)) :
-				id = str(vars[x][0])
-				aut = str(vars[x][1])
-				aut = aut.replace('\"','').replace(',','')
-				decvars.append([id,aut])
-				x += 1
-		
-		links = re.findall('return\(\[(.*?)\]\.join\(\"\"\) \+ (.*?)\.join\(\"\"\)', pglinks)
-                          
-		pg += 10
-		msgDialog.update(pg)
-		
-		if links:
-				for link in links:
-						link2play = link[0].replace('\"','').replace(',','').replace('\\','')
-						x = 0
-						for x in range(len(decvars)) :
-								if link[1] == decvars[x][0]:
-										break
-								else :
-									x += 1
-									
-						link2play = link2play + decvars[x][1]
-						liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
-						liz.setInfo('video', {'Title': name})
-						playlist.add(url=link2play, listitem=liz, index=7)
+		if url2Play:
+				liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
+				liz.setInfo('video', {'Title': name})
+				liz.setPath(url)
+				liz.setProperty('mimetype','video/mp4')
+				liz.setProperty('IsPlayable', 'true')
+				
+				playlist.add(url=url2Play, listitem=liz, index=7)
 						
 				msgDialog.update(100)
 				xbmc.Player(xbmc.PLAYER_CORE_AUTO).play(playlist)
@@ -187,14 +143,34 @@ def addLink(name,url,iconimage):
 		return ok
 
 def addDir(name, url, mode, iconimage, pasta=True, total=1, plot=''):
-	u = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
-	ok = True
-	liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
-	liz.setProperty('fanart_image', fanart)
-	liz.setInfo( type="video", infoLabels={ "title": name, "plot": plot } )
-	ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=pasta, totalItems=total)
-	
-	return ok
+		u = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
+		ok = True
+		liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+		liz.setProperty('fanart_image', fanart)
+		liz.setInfo( type="video", infoLabels={ "title": name, "plot": plot } )
+		ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=pasta, totalItems=total)
+
+		return ok
+		
+def getURL2Play(url):
+		link = openURL(url)
+
+		try:
+				urlFile  = re.findall(r'file: "(.*?).m3u8',link)[0]
+				urlVideo = urlFile + '.m3u8?embed='
+		except:
+				urlVideo = '-'
+			
+		return urlVideo			
+
+def getImg(texto):
+		texto = texto.lower()
+		texto = texto.replace('ç','c').replace('ã','a').replace('õ','o')
+		texto = texto.replace('â','a').replace('ê','e').replace('ô','o')
+		texto = texto.replace('á','a').replace('é','e').replace('í','i').replace('Í','i').replace('ó','o').replace('ú','u')
+		texto = texto.replace('&','').replace(' ', '-').replace('.', '-').replace(',', '-').replace('--','-')
+		
+		return texto
 		
 #####################################################################
 
