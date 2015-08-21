@@ -1,7 +1,0 @@
-<settings>
-<category label="Configurações">
-	<setting id="enable_meta" type="bool" label="Habilitar Metadados de Filmes" default="true"/>
-	<setting id="auto-view" type="bool" label="Habilitar Auto Visualização" default="true" enable="!eq(-1,false)"/>
-	<setting id="MAIN" type="number" label="Auto Visualização Padrão" default="515" enable="!eq(-1,false)+!eq(-2,false)"/>
-</category>
-</settings>

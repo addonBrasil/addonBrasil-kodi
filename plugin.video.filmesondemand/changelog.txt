@@ -1,4 +1,0 @@
-﻿
-Versão 1.0.0 - (21/08/2015)
-* Primeiro release do addon by AddonBrasil
-* Adicionados 600 Filmes
