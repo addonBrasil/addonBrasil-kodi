@@ -1,0 +1,6 @@
+﻿
+Versão 1.0.1 - (21/08/2015)
+* Adicionada a categoria de Filmes & Series
+
+Versão 1.0.0 - (23/07/2015)
+* Primeiro release do addon by AddonBrasil

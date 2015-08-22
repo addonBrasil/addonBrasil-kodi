@@ -5,7 +5,7 @@
 import xbmc,xbmcaddon,xbmcgui,xbmcplugin,urllib,urllib2,os,re,sys,datetime,time
 
 ###############################################################################
-versao = '1.0.0'
+versao = '1.0.1'
 addon_id = 'plugin.video.lusotv'
 selfAddon = xbmcaddon.Addon(id=addon_id)
 base = 'http://lusotv.addonbrasil.tk'
@@ -14,10 +14,11 @@ art  = base + '/imgs/'
 ###############################################################################
 
 def menuPrincipal():
-		addDir('Generalistas' , base, 10, '', 1)
-		addDir('Desportos'    , base, 10, '', 2)
-		addDir('Notícias'     , base, 10, '', 3)
-		addDir('Religiosos'   , base, 10, '', 4)
+		addDir('Generalistas'   , base, 10, art + 'general.png'   , 1)
+		addDir('Desportos'      , base, 10, art + 'desporto.png'  , 2)
+		addDir('Notícias'       , base, 10, art + 'noticias.png'  , 3)
+		addDir('Religiosos'     , base, 10, art + 'religiosos.png', 4)
+		addDir('Filmes & Séries', base, 10, art + 'filmseries.png', 5)
 		
 		xbmc.executebuiltin("Container.SetViewMode(50)")
 
