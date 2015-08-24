@@ -31,6 +31,8 @@ def menuPrincipal():
 		addDir2('LISTA'     , base, 10, artfolder + 'lista.png')
 		addDir2('DUBLADOS'  , base, 10, artfolder + 'dublados.png')
 		addDir2('LEGENDADOS', base, 22, artfolder + 'legendados.png')
+		addDir3('CONFIGURAÇÕES',' ---',99, artfolder + 'config.png')
+		
 		
 def menuLetras(url, name):
 		if name == "LISTA"      : modo = 20
@@ -90,6 +92,10 @@ def getFilmes(url, name):
 				setView('movies', 'MAIN')
 		else: 
 				xbmc.executebuiltin("Container.SetViewMode(50)")
+				
+def getConfig():
+	xbmcaddon.Addon(addon_id).openSettings()
+		
 
 def addDir(name,url,mode,iconimage,itemcount=1,isFolder=True):
 		if metaset=='true':
@@ -140,6 +146,16 @@ def addDir2(name,url,mode,iconimage):
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
 				
+def addDir3(name,url,mode,iconimage):
+        xbmc.executebuiltin('Container.SetViewMode(50)')
+        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
+        ok=True
+        liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+        liz.setInfo( type="Video", infoLabels={ "Title": name } )
+        liz.setProperty('fanart_image', fanart)
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+        return ok
+				
 def doPlay(url, name, iconimage):
 		links = url.split(',')
 		
@@ -156,9 +172,24 @@ def doPlay(url, name, iconimage):
 		except:
 				pass
 				
-def setView(content, viewType):
-    if content : xbmcplugin.setContent(int(sys.argv[1]), content)
-    if selfAddon.getSetting('auto-view')=='true' : xbmc.executebuiltin("Container.SetViewMode(%s)" % selfAddon.getSetting(viewType) )
+def setView(content, viewType):	
+	if content : xbmcplugin.setContent(int(sys.argv[1]), content)
+	
+	print "content " + str(xbmcplugin.setContent(int(sys.argv[1]), content))
+	print "content " + str(content)
+	
+	wvisu = selfAddon.getSetting('MAIN')
+	
+	print "WVISU " + wvisu
+	
+	if wvisu   == "0" : visuID = 500
+	elif wvisu == "1" : visuID = 515
+	elif wvisu == "2" : visuID = 50
+	elif wvisu == "3" : visuID = 51
+	
+	print "visuID " + str(visuID)
+	
+	if selfAddon.getSetting('auto-view')=='true' : xbmc.executebuiltin("Container.SetViewMode(%s)" % visuID )
 
 ###############################################################################
 
@@ -209,6 +240,7 @@ except : pass
 if mode == None or url == None or len(url) < 1            : menuPrincipal()
 elif mode == 10                                           : menuLetras(url, name)
 elif mode == 20 or mode == 21 or mode == 22 or mode == 30 : getFilmes(url, name)
+elif mode == 99                                           : getConfig()
 elif mode == 100                                          : doPlay(url, name, iconimage)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
