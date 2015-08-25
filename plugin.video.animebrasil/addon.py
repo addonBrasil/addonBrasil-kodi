@@ -9,7 +9,7 @@ from xbmcgui import ListItem
 from BeautifulSoup import BeautifulSoup
 
 versao      = '1.0.0'
-addon_id    = 'plugin.video.anitube'
+addon_id    = 'plugin.video.animebrasil'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
 addonfolder = selfAddon.getAddonInfo('path')
 artfolder   = addonfolder + '/resources/img/'
