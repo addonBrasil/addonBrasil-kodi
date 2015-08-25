@@ -20,7 +20,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.anitube" name="AniTube - Animes Online" version="1.0.0" provider-name="AddonBrasil">
+<addon id="plugin.video.animebrasil" name="Anime Brasil" version="1.0.0" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -30,8 +30,8 @@
   <extension point="xbmc.addon.metadata">
     <language>en</language>
     <platform>all</platform>
-    <summary lang="en">AniTube - Animes Online</summary>
-    <description lang="en">No AniTube vocÃª assiste animes legendados com qualidade SD e HD</description>
+    <summary lang="en">Anime Brasil - Animes Online</summary>
+    <description lang="en">No Anime Brasil vocÃª assiste animes legendados com audio original e qualidade SD e HD</description>
     <platform>all</platform>
   </extension>
 </addon>
