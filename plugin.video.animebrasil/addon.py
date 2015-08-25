@@ -8,7 +8,7 @@ import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmc,xbmcaddon,HTMLParser,sys
 from xbmcgui import ListItem
 from BeautifulSoup import BeautifulSoup
 
-versao      = '1.0.0'
+versao      = '2.0.0'
 addon_id    = 'plugin.video.animebrasil'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
 addonfolder = selfAddon.getAddonInfo('path')
@@ -31,7 +31,7 @@ def menuPrincipal():
 
 def getCategorias(url):
 		link = openURL(url)
-		link = unicode(link, 'utf-8', errors='ignore')
+		link = unicode(link, 'ascii', errors='ignore')
 		
 		soup = BeautifulSoup(link)
 		categorias = soup.findAll("li", { "class" : "mainList" })
@@ -40,23 +40,31 @@ def getCategorias(url):
 		
 		for categoria in categorias:
 				urlTemp  = categoria.a["href"]
-				titTemp  = categoria.a.img["alt"].encode('ascii', 'ignore')
+				titTemp  = categoria.a.img["alt"].replace(' category','').encode('ascii', 'ignore')
 				imgTemp  = categoria.a.img["src"]
-				plotTemp = categoria.a["title"].replace('Sinopse:', '').replace('Sinopse; ', '')
+				plotTemp = categoria.a["title"].replace('Sinopse:', '').replace('Sinopse; ', '').replace('   ', '').encode('ascii', 'ignore')
+
+				print urlTemp
+				print titTemp
+				print imgTemp
+				print cleanHtml(plotTemp)
+				
 				temp = [urlTemp, titTemp,imgTemp,plotTemp] 
+				
 				a.append(temp)
 				
 		total = len(a)
+		
 
 		for url2, titulo, img, plot in a:
-				titulo = cleanHtml(titulo).replace(' category','')
+				titulo = cleanHtml(titulo)
 				addDir(titulo,url2,20,img,True,total,plot)
 			
 		pages = soup.find('ul',{ "id" : "pagination-flickr" }).findAll('a')
 		
 		for prox_pagina in pages:
 				if prox_pagina.text == 'Next':
-						addDir('Próxima Página >>',prox_pagina['href'],10,artfolder + 'proxpag.jpg')
+						addDir('Próxima Página >>', prox_pagina['href'], 10, artfolder + 'proxpag.jpg')
 				
 		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 		xbmc.executebuiltin('Container.SetViewMode(515)')
@@ -80,9 +88,7 @@ def getEpisodios(url):
 				except:
 						pass
 				
-		print "NÃO SORT " + str(e)
 		e.sort()
-		print "SORT " + str(e)
 		
 		total = len(e)
 
@@ -112,9 +118,6 @@ def doPlay(url, name, iconimage):
 		urlx = re.compile('file: "(.*?).mp4"').findall(jwp)
 		qldx = re.compile('label: "(.*?)"').findall(jwp)
 			
-		print "URLX = " + str(urlx)
-		print "QLDX = " + str(qldx)
-		
 		urls = []
 		qlds = []
 		
