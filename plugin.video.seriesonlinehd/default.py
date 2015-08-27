@@ -21,6 +21,8 @@ artfolder   = addonfolder + '/resources/art/'
 
 base = 'http://www.seriesonlinehd.org'
 
+#############################################################################################
+
 def menuPrincipal():
 		addDir2('Séries'      , base, 10, artfolder + 'series.jpg',fanart)
 		addDir2('Categorias'  , base, 20, artfolder + 'categorias.jpg',fanart)
@@ -30,15 +32,18 @@ def menuPrincipal():
 
 def getSeries(url):
 		link = openURL(url)
-		soup   = BeautifulSoup(link)
+		link = unicode(link, 'ascii', 'ignore')
+	
+		soup     = BeautifulSoup(link)
 		conteudo = soup("div", {"class": "items"})
-		series = conteudo[0]("div", {"class" : "imagen"})
+		
+		series   = conteudo[0]("div", {"class" : "imagen"})
 		
 		totSeries = len(series)
 
 		for serie in series:
 				url = serie.a["href"]
-				tit = serie.h2.text.replace(' Online', '').replace(' Dublado e Legendado','').encode('utf-8', 'ignore')
+				tit = serie.img["alt"].replace(' Online', '').replace(' Dublado e Legendado','').replace(' Dublado e legendado','').replace('Assistir ', '').encode('utf-8','ignore')
 				img = serie.img["src"] 
 				
 				addDir(tit, url, 11, str(img), totSeries, True)
@@ -205,11 +210,7 @@ def playVideo(name, url, iconimage):
 		elif 'vidto'      in url_video : matriz = getVideoURL(url_video)   
 		else                           : print "Falha: " + str(url_video)
 			
-		print matriz
-
 		url = matriz[0]
-
-		print url
 
 		if url=='-': return
 
@@ -243,6 +244,8 @@ def playVideo(name, url, iconimage):
 						xbmcPlayer.setSubtitles(sfile)
 				else:
 						xbmcPlayer.setSubtitles(legendas)
+						
+#############################################################################################
 
 def getVideoURL(vURL) :
 		urlVideo = urlresolver.HostedMediaFile(url=vURL).resolve()
@@ -318,7 +321,17 @@ def getVideoPW(url) :
 			urlVideo    = '-'
 			urlLegendas = '-'
 			
-		return [urlVideo, urlLegendas]				
+		return [urlVideo, urlLegendas]			
+		
+#############################################################################################
+
+def openURL(url):
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+		response = urllib2.urlopen(req)
+		link=response.read()
+		response.close()
+		return link
 		
 def addDir(name, url, mode, iconimage, pasta=True, total=1, plot=''):
 		u = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
@@ -339,13 +352,7 @@ def addDir2(name,url,mode,iconimage,fanart,pasta=True,description=''):
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta)
 		return ok
 				
-def openURL(url):
-		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-		response = urllib2.urlopen(req)
-		link=response.read()
-		response.close()
-		return link
+#############################################################################################
 		
 def get_params():
 		param=[]
@@ -382,13 +389,11 @@ except : pass
 try    : iconimage=urllib.unquote_plus(params["iconimage"])
 except : pass
 
-print "Site : " + str(site) 
-print "Mode : " + str(mode)
-print "URL  : " + str(url)
-print "Name : " + str(name)
-print "Image: " + str(iconimage)
-
-print params
+#print "Site : " + str(site) 
+#print "Mode : " + str(mode)
+#print "URL  : " + str(url)
+#print "Name : " + str(name)
+#print "Image: " + str(iconimage)
 
 if   mode == None : menuPrincipal()
 elif mode == 10   : getSeries(url)
