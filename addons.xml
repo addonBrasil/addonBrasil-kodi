@@ -12,8 +12,8 @@
   </extension>
 
   <extension point="xbmc.addon.metadata">
-    <summary lang="en">Anderson GuimarÃ£es</summary>
-    <description lang="en">Canal do Youtube Anderson GuimarÃ£es com dicas, truques e tutoriais para Kodi agora diretamente no Kodi</description>
+    <summary lang="en">Anderson Guimarães</summary>
+    <description lang="en">Canal do Youtube Anderson Guimarães com dicas, truques e tutoriais para Kodi agora diretamente no Kodi</description>
     <platform>all</platform>
     <forum></forum>
     <website></website>
@@ -31,7 +31,7 @@
     <language>en</language>
     <platform>all</platform>
     <summary lang="en">Anime Brasil - Animes Online</summary>
-    <description lang="en">No Anime Brasil vocÃª assiste animes legendados com audio original e qualidade SD e HD</description>
+    <description lang="en">No Anime Brasil você assiste animes legendados com audio original e qualidade SD e HD</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -49,7 +49,7 @@
     <language>en</language>
     <platform>all</platform>
     <summary lang="en">Arquivo Brasil</summary>
-    <description lang="en">O Arquivo Brasil Ã© um agregador de episÃ³dios de novelas, sÃ©ries, programas jornalÃ­sticos e esportivos brasileiros.</description>
+    <description lang="en">O Arquivo Brasil é um agregador de episódios de novelas, séries, programas jornalísticos e esportivos brasileiros.</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -67,7 +67,7 @@
 
     <extension point="xbmc.addon.metadata">
         <summary>Filmes On Demand</summary>
-        <description>No Filmes online voce assiste filmes dublados e legendados com um sÃ³ clique</description>
+        <description>No Filmes On Demand voce assiste filmes dublados e legendados com um só clique</description>
         <platform>all</platform>
     </extension>
 </addon>
@@ -144,6 +144,24 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.seriesonlinehd" name="Séries Online HD" version="1.0.0" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.urlresolver"  optional="true"/>
+    <import addon="script.common.plugin.cache" optional="true"/>
+    <import addon="script.module.simplejson" optional="true"/>
+		<import addon="script.module.parsedom" optional="true"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Séries Online HD</summary>
+    <description lang="en">Séries recentes e atualizadas periodicamente com qualidade HD</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="repository.addonBrasil" name="AddonBrasil Repository" version="0.0.2" provider-name="AddonBrasil">
 	<extension point="xbmc.addon.repository" name="AddonBrasil Repository">
 		<info compressed="false">http://raw.github.com/addonBrasil/addonBrasil-kodi/master/addons.xml</info>
@@ -151,8 +169,8 @@
 		<datadir zip="true">http://raw.github.com/addonBrasil/addonBrasil-kodi/master/repo/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		<summary>RepositÃ³rio AddonBrasil</summary>
-		<description>RepositÃ³rio de addons brasileiros AddonBrasil</description>
+		<summary>Repositório AddonBrasil</summary>
+		<description>Repositório de addons brasileiros AddonBrasil</description>
 		<disclaimer></disclaimer>
 		<platform>all</platform>
 	</extension>
