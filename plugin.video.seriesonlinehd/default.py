@@ -24,7 +24,6 @@ base = 'http://www.seriesonlinehd.org'
 def menuPrincipal():
 		addDir2('Séries'      , base, 10, artfolder + 'series.jpg',fanart)
 		addDir2('Categorias'  , base, 20, artfolder + 'categorias.jpg',fanart)
-		addDir2('Atualizações', base, 30, artfolder + 'categorias.jpg',fanart)
 		addDir2('Pesquisa'    , base, 50, artfolder + 'pesquisa.jpg',fanart)  
 		
 		xbmc.executebuiltin('Container.SetViewMode(50)')
@@ -128,32 +127,6 @@ def getCategorias(url):
 		totCategorias = len(categorias)
 		
 		for categoria in categorias:
-				titCat = categoria.text.encode('utf-8', 'ignore')
-				urlCat = categoria.a['href']
-				addDir(titCat, urlCat, 10, icon, totCategorias, True)
-						
-		xbmc.executebuiltin('Container.SetViewMode(500)')
-
-def getAtualizacoes(url):                  
-		link = openURL(url)
-		soup = BeautifulSoup(link)
-		
-		conteudo   = soup("ul", {"class": "sa-lista"})
-		atualizacoes = conteudo("li")[0]
-		
-		'''		tDATA = conteudo[0]("td", {"class": "ep-ntp"})
-		episEP   = conteudo[0]("td", {"class": "ep-nep"})
-		#titEP   = conteudo[0]("td", {"class": "ep-tit"})
-		#resEP   = conteudo[0]("td", {"class": "ep-res"})
-		dubEP    = conteudo[0]("td", {"class": "ep-dub"})
-		legEP    = conteudo[0]("td", {"class": "ep-leg"})'''
-		
-		
-		print atualizacoes
-		
-		totAtualizacoes = len(atualizacoes)
-		
-		for atualizacao in atualizacoes:
 				titCat = categoria.text.encode('utf-8', 'ignore')
 				urlCat = categoria.a['href']
 				addDir(titCat, urlCat, 10, icon, totCategorias, True)
@@ -422,7 +395,6 @@ elif mode == 10   : getSeries(url)
 elif mode == 11   : getTemporadas(name, url, iconimage)
 elif mode == 12   : getEpisodios(name, url, iconimage)
 elif mode == 20   : getCategorias(url)
-elif mode == 30   : getAtualizacoes(url)
 elif mode == 50   : doPesquisa()
 elif mode == 100  : playVideo(name, url, iconimage)
 
