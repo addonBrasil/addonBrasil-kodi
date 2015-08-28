@@ -1,3 +1,7 @@
 
+Versão 1.0.1 - (27/08/2015)
+* Correção na navegação das séries
+* Correção das legendas em alguns servidores suporados
+
 Versão 1.0.0 - (26/08/2015)
 * Primeiro release do addon by AddonBrasil

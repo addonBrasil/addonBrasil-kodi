@@ -49,8 +49,14 @@ def getSeries(url):
 				addDir(tit, url, 11, str(img), totSeries, True)
 
 		try :
-				pagina = BeautifulSoup(soup.find('div', { "class" : "wp-pagenavi" }).prettify())("a", { "class" : "previouspostslink" })[0]["href"]
-				addDir2("Próxima Página >>", pagina, 10, artfolder + "proxima.jpg",fanart)
+				proxpag = BeautifulSoup(soup.find('div', { "class" : "wp-pagenavi" }).prettify())("a", { "class" : "previouspostslink" })[0]["href"]
+				if 'miss' in proxpag :
+						print "sim tem"
+						temp = proxpag.partition('?')
+						print temp
+						proxpag = temp[0]
+				print proxpag
+				addDir2("Próxima Página >>", proxpag, 10, artfolder + "proxima.jpg",fanart)
 		except:
 				pass
 				
@@ -147,9 +153,11 @@ def doPesquisa():
 		if teclado.isConfirmed():
 				busca = teclado.getText().replace(' ','+')
 				
-		if len(busca) > 1 : url = base + '/?s=' + busca
-				
-		getSeries(url)
+				if len(busca) > 1 : 
+						url = base + '/?s=' + busca
+						getSeries(url)
+				else:
+						return				
 				
 def playVideo(name, url, iconimage):
 		cloudzilla = r'href=".*?cz.php\?cz=(.*?)"'
@@ -314,9 +322,10 @@ def getVideoPW(url) :
 		link = openURL(url)
 
 		try:
-			urlVideoPW  = re.findall(r'vurl2 = "(.+?)";',link)[0]
+			urlVideoPW = re.findall(r'vurl2 = "(.+?)";',link)[0]
+			urlLegVPW  = re.findall(r'vsubtitle = "(.+?)";',link)[0]
 			urlVideo    = urlVideoPW
-			urlLegendas = '-'
+			urlLegendas = urlLegVPW
 		except:
 			urlVideo    = '-'
 			urlLegendas = '-'
