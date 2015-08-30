@@ -1,4 +1,6 @@
-﻿
+﻿Versão 1.1.0 - (30/08/2015)
+*Alterada estrutura do addon para atualizar categorias sem necessitar de uma nova versão
+
 Versão 1.0.1 - (21/08/2015)
 * Adicionada a categoria de Filmes & Series
 

@@ -1,55 +1,72 @@
 # -*- coding: utf-8 -*-
-# By AddonBrasil
+# By AddonBrasil - 23/07/2015
 ###############################################################################
 
 import xbmc,xbmcaddon,xbmcgui,xbmcplugin,urllib,urllib2,os,re,sys,datetime,time
 
 ###############################################################################
-versao = '1.0.1'
-addon_id = 'plugin.video.lusotv'
-selfAddon = xbmcaddon.Addon(id=addon_id)
-base = 'http://lusotv.addonbrasil.tk'
-art  = base + '/imgs/'
+
+addon_id    = 'plugin.video.lusotv'
+selfAddon   = xbmcaddon.Addon(id=addon_id)
+addonfolder = selfAddon.getAddonInfo('path')
+icon        = addonfolder + '/icon.png'
+fanart      = addonfolder + '/fanart.jpg'
+base        = 'http://lusotv.addonbrasil.tk/'
 
 ###############################################################################
 
-def menuPrincipal():
-		addDir('Generalistas'   , base, 10, art + 'general.png'   , 1)
-		addDir('Desportos'      , base, 10, art + 'desporto.png'  , 2)
-		addDir('Notícias'       , base, 10, art + 'noticias.png'  , 3)
-		addDir('Religiosos'     , base, 10, art + 'religiosos.png', 4)
-		addDir('Filmes & Séries', base, 10, art + 'filmseries.png', 5)
+def menuPrincipal(url):
+		getMenu(url)
 		
-		xbmc.executebuiltin("Container.SetViewMode(50)")
+def getMenu(url):
+		linhas = urllib2.urlopen(url).readlines()
+		totLines = len(linhas)
+		
+		for linha in linhas :
+				linha = linha.replace('\n','')
+		
+				if not '#' in linha :
+						params = linha.split(' | ')
+						
+						if params[0] != '' :
+								opcao = params[0]
+								img   = base + 'imgs/' + params[1] 
+								link  = base + params[2].strip()
+								sub   = params[3].strip()
+								
+								if  sub == "S" : addDir(opcao, link, 1, img, totLines)
+								else           : addDir(opcao, link, 10, img, totLines)
+								
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+		xbmc.executebuiltin("Container.SetViewMode(500)")
+		
+def getCanais(url):
+		linhas = urllib2.urlopen(url).readlines()
+		totLinhas = len(linhas)
 
-def getCanais(url, group):
-		for line in urllib2.urlopen(url).readlines():
-				params = line.split(' | ')
+		for linha in linhas :
+				linha = linha.replace('\r\n','')
 				
-				if str(group) == str(params[0]) :
-						nome = params[1]
-						img = art + params[2] 
-						links = params[3].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').rstrip()
-						addDir2(nome, links, 100, img)
+				if not '#' in linha :
+						params = linha.split(' | ')
+						
+						if params[0] != '' :
+								nome  = params[0]
+								img   = base + 'imgs/' + params[1] 
+								links = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').rstrip()
+								
+								addDir(nome, links, 100, img, totLinhas, False)
 							
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 		xbmc.executebuiltin("Container.SetViewMode(500)")
 
+		
 ###############################################################################
 
-def addDir(name, url, mode, iconimage, group, total=0, pasta=True, plot='', fanart=''):
-    u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage) + "&group=" + str(group)
-    liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
-    liz.setInfo(type="Video", infoLabels={"Title": name, "Plot": plot})
-    contextMenuItems = []
-    contextMenuItems.append(('Movie Information', 'XBMC.Action(Info)'))
-    liz.addContextMenuItems(contextMenuItems, replaceItems=True)
-    liz.setProperty('fanart_image', fanart)
-    return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=pasta, totalItems=total)
-			
-def addDir2(name, url, mode, iconimage, total=0, pasta=False, plot='', fanart=''):
+def addDir(name, url, mode, iconimage, total=0, pasta=True ,fanart=fanart):
     u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
     liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
-    liz.setInfo(type="Video", infoLabels={"Title": name, "Plot": plot})
+    liz.setInfo(type="Video", infoLabels={"Title": name})
     contextMenuItems = []
     contextMenuItems.append(('Movie Information', 'XBMC.Action(Info)'))
     liz.addContextMenuItems(contextMenuItems, replaceItems=True)
@@ -64,7 +81,6 @@ def doPlay(url, name, iconimage):
 		
 		try:
 				for link in links:
-						print link
 						listitem = xbmcgui.ListItem(name, thumbnailImage=iconimage)
 						listitem.setInfo('video', {'Title': name})
 						playlist.add(url=link, listitem=listitem, index=7)
@@ -72,6 +88,7 @@ def doPlay(url, name, iconimage):
 				xbmc.Player(xbmc.PLAYER_CORE_AUTO).play(playlist)
 		except:
 				pass
+				
 ###############################################################################
 
 def get_params():
@@ -95,17 +112,11 @@ params=get_params()
 url       = None
 name      = None
 iconimage = None
-group     = None
 mode      = None
-tamanhoparavariavel=None
 
 try    : url = urllib.unquote_plus(params["url"])
 except : pass
-try    : tamanhoparavariavel = urllib.unquote_plus(params["tamanhof"])
-except : pass
 try    : iconimage = urllib.unquote_plus(params["iconimage"])
-except : pass
-try    : group = int(params["group"])
 except : pass
 try    : name = urllib.unquote_plus(params["name"])
 except : pass
@@ -116,13 +127,12 @@ except : pass
 
 #print "Mode : " + str(mode)
 #print "Icon : " + str(iconimage)
-#print "Group: " + str(group)
 #print "URL  : " + str(url)
 #print "Name : " + str(name)
-#print "Var  : " + str(tamanhoparavariavel)
 
-if mode   == None : menuPrincipal()
-elif mode == 10   : getCanais(url, group)
+if   mode == None : menuPrincipal(url=base+'?a=menu.ltv')
+elif mode == 1    : getMenu(url)
+elif mode == 10   : getCanais(url)
 elif mode == 100  : doPlay(url, name, iconimage)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
