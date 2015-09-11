@@ -3,35 +3,32 @@
 # By AddonBrasil - 28/07/2015
 #####################################################################
 
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmc,xbmcaddon,HTMLParser,os
-import httplib
+import urllib,urllib2,re,xbmcplugin, xbmcaddon, xbmcgui, time
+import client, jsunpack
 
-from urlparse      import urlparse
 from BeautifulSoup import BeautifulSoup
 
-h = HTMLParser.HTMLParser()
-
-versao      = '1.1.0'
 addon_id    = 'plugin.video.arquivobrasil'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
 addonfolder = selfAddon.getAddonInfo('path')
 
 icon      = addonfolder + '/icon.png'
 fanart    = addonfolder + '/fanart.jpg'
-artfolder = addonfolder + '/resources/art/'
 
-base = 'http://novelasgravadas.net/'
+base   = 'http://novelasgravadas.net/'
+imgsrv = 'http://arquivobrasil.addonbrasil.tk/imgs/'
 
 #####################################################################
 
 def menuPrincipal():
-		addDir('Novelas'   , base, 10, artfolder + 'novelas.jpg')
-		addDir('Séries'    , base, 10, artfolder + 'series.jpg')
-		addDir('Jornalismo', base, 10, artfolder + 'jornalismo.jpg')
-		addDir('Variedades', base, 10, artfolder + 'variedades.jpg')
-		addDir('Esportes'  , base, 10, artfolder + 'esportes.jpg')
+		addDir('Novelas'   , base, 10, imgsrv + 'novelas.jpg')
+		addDir('Séries'    , base, 10, imgsrv + 'series.jpg')
+		addDir('Jornalismo', base, 10, imgsrv + 'jornalismo.jpg')
+		addDir('Variedades', base, 10, imgsrv + 'variedades.jpg')
+		addDir('Esportes'  , base, 10, imgsrv + 'esportes.jpg')
 
-		xbmc.executebuiltin('Container.SetViewMode(50)')
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+		xbmc.executebuiltin('Container.SetViewMode(500)')
 		
 def getListaCat(url, name):
 		link = openURL(url)
@@ -40,7 +37,7 @@ def getListaCat(url, name):
 		
 		listaGeral = conteudo[0]("ul", {"class": "sub-menu"} )
 		
-		if name   == 'Novelas'    : temp = listaGeral[0]
+		if   name == 'Novelas'    : temp = listaGeral[0]
 		elif name == 'Séries'     : temp = listaGeral[1]
 		elif name == 'Jornalismo' : temp = listaGeral[2]
 		elif name == 'Variedades' : temp = listaGeral[3]
@@ -53,9 +50,10 @@ def getListaCat(url, name):
 		for categoria in categorias:
 				titcat = categoria.text.replace('&#038;','&').encode('utf-8', 'ignore')
 				urlcat = categoria.a["href"]
-				imgcat = artfolder + getImg(titcat) + '.png'
+				imgcat = imgsrv + getImg(titcat)
 				addDir(titcat, urlcat, 20, imgcat, totCategorias, True)				
 
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 		xbmc.executebuiltin('Container.SetViewMode(500)')
 		
 def getVideosCat(url, name, iconimage):
@@ -69,20 +67,21 @@ def getVideosCat(url, name, iconimage):
 		
 		for video in videos:
 				url = video.a["href"]
-				tit = video.img["alt"].replace('&#038;','&').replace('&#8211;',"-").replace(' de ',' - ').replace(' Completo','').encode('utf-8', 'ignore')
+				tit = video.img["alt"].replace('&#038;','&').replace('&#8211;',"-").replace(' de ',' - ').replace(' Completo','').replace('feira,','feira').encode('utf-8', 'ignore')
 				img = video.img["src"] 
 				addDir(tit, url, 100, img, False, totVideos)
 				
 		try :
-				page = re.compile("<span class='current'>.+?</span><a href='(.+?)' class='inactive' >.+?</a>").findall(link)
+				paginas = re.compile("<span class='current'>.*?</span><a href='(.*?)' class='inactive' >.*?</a>").findall(link)
 				
-				for prox_pagina in page:
-						addDir('Página Seguinte >>',prox_pagina,20,artfolder + 'prox.jpg')
+				for proxpag in paginas:
+						addDir('Próxima Página >>', proxpag, 20, imgsrv + 'proxima.jpg')
 						break
 		except :
 				pass
 				
-		xbmc.executebuiltin('Container.SetViewMode(50)')
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+		xbmc.executebuiltin('Container.SetViewMode(500)')
 
 def doPlay(url, name):
 		link = openURL(url)
@@ -100,11 +99,13 @@ def doPlay(url, name):
 		
 		try :
 				url2Rslv = re.findall('<IFRAME SRC="(.*?)" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=645 HEIGHT=355></IFRAME>', link)[0]
-				url2Play = getURL2Play(url2Rslv)
+				url2Rslv = url2Rslv.replace('embed-','')
 		except:
 				url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
 				linkRslv = openURL(url2Rslv)
 				url2Play = re.findall('<location>(.*?)</location>', linkRslv)[0]
+		
+		url2Play = getURL2Play(url2Rslv)
 		
 		msgDialog.update(75)
 		
@@ -122,8 +123,54 @@ def doPlay(url, name):
 		else:
 				msgDialog.update(100)
 				dialog = xbmcgui.Dialog()
-				dialog.ok("ARQUIVO BRASIL", "Video Indisponível", "Este video ainda não esta disponível...", "Tente novamente em breve.")		
+				dialog.ok("ARQUIVO BRASIL", "Video Indisponível", "Este vídeo ainda não esta disponível...", "Tente novamente em breve.")		
+				
+def getURL2Play(url):
+    try:
+        result = client.request(url, mobile=True, close=False)
 
+        try:
+            post = {}
+            f = client.parseDOM(result, 'Form', attrs = {'method': 'POST'})[0]
+            f = f.replace('"submit"', '"hidden"')
+            k = client.parseDOM(f, 'input', ret='name', attrs = {'type': 'hidden'})
+            for i in k: post.update({i: client.parseDOM(f, 'input', ret='value', attrs = {'name': i})[0]})
+            post = urllib.urlencode(post)
+        except:
+            post = None
+
+        for i in range(0, 10):
+            try:
+                result = client.request(url, post=post, mobile=True, close=False)
+                result = result.replace('\n','')
+
+                result = re.compile('(eval.*?\)\)\))').findall(result)[-1]
+                result = jsunpack.unpack(result)
+
+                result = re.compile('sources *: *\[.+?\]').findall(result)[-1]
+                result = re.compile('file *: *"(http.+?)"').findall(result)
+
+                #url = [i for i in result if not '.m3u8' in i]
+								
+                #if len(url) > 0: return '%s|Referer=%s' % (url[0], urllib.quote_plus('http://vidzi.tv/nplayer/jwplayer.flash.swf'))
+								
+                url = [i for i in result if '.m3u8' in i]
+								
+                if len(url) > 0: return url[0]
+            except:
+                time.sleep(1)
+    except:
+        return
+				
+def getImg(texto):
+		texto = texto.lower()
+		texto = texto.replace('ç','c').replace('ã','a').replace('õ','o')
+		texto = texto.replace('â','a').replace('ê','e').replace('ô','o')
+		texto = texto.replace('á','a').replace('é','e').replace('í','i').replace('Í','i').replace('ó','o').replace('ú','u').replace('ü','u')
+		texto = texto.replace('&','').replace(' ', '-').replace('.', '-').replace(',', '-').replace('--','-')
+		texto = texto + '.png'
+		return texto
+		
 def openURL(url):
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -151,26 +198,6 @@ def addDir(name, url, mode, iconimage, pasta=True, total=1, plot=''):
 		ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=pasta, totalItems=total)
 
 		return ok
-		
-def getURL2Play(url):
-		link = openURL(url)
-
-		try:
-				urlFile  = re.findall(r'file: "(.*?).m3u8',link)[0]
-				urlVideo = urlFile + '.m3u8?embed='
-		except:
-				urlVideo = '-'
-			
-		return urlVideo			
-
-def getImg(texto):
-		texto = texto.lower()
-		texto = texto.replace('ç','c').replace('ã','a').replace('õ','o')
-		texto = texto.replace('â','a').replace('ê','e').replace('ô','o')
-		texto = texto.replace('á','a').replace('é','e').replace('í','i').replace('Í','i').replace('ó','o').replace('ú','u')
-		texto = texto.replace('&','').replace(' ', '-').replace('.', '-').replace(',', '-').replace('--','-')
-		
-		return texto
 		
 #####################################################################
 

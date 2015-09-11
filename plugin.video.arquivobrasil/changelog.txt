@@ -1,8 +1,12 @@
-[B]23/07/205 - Versão 1.1.0[/B]
+[B]11/09/2015 - Versão 1.2.0[/B]
+- Modificação dos ícones do addon
+- Correção na resolução dos links das fontes dos vídeos
+
+[B]23/07/2015 - Versão 1.1.0[/B]
 - Novas fontes mais estáveis para os vídeos
 
-[B]23/07/205 - Versão 1.0.1[/B]
+[B]23/07/2015 - Versão 1.0.1[/B]
 - Alteração na criação dos playlists
 
-[B]13/07/205 - Versão 1.0.0[/B]
+[B]13/07/2015 - Versão 1.0.0[/B]
 - Release incial do addon by AddonBrasil

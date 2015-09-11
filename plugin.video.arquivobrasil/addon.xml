@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.arquivobrasil" name="Arquivo Brasil" version="1.1.0" provider-name="AddonBrasil">
+<addon id="plugin.video.arquivobrasil" name="Arquivo Brasil" version="1.2.0" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -9,10 +9,10 @@
   </extension>
 	
   <extension point="xbmc.addon.metadata">
-    <language>en</language>
+    <language>pt</language>
     <platform>all</platform>
-    <summary lang="en">Arquivo Brasil</summary>
-    <description lang="en">O Arquivo Brasil é um agregador de episódios de novelas, séries, programas jornalísticos e esportivos brasileiros.</description>
+    <summary lang="pt">Arquivo Brasil</summary>
+    <description lang="pt">O Arquivo Brasil e um agregador de episodios de novelas, series, programas de variedades, programas jornalísticos e esportivos brasileiros.</description>
     <platform>all</platform>
   </extension>
 </addon>
