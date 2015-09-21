@@ -49,7 +49,7 @@
     <language>pt</language>
     <platform>all</platform>
     <summary lang="pt">Arquivo Brasil</summary>
-    <description lang="pt">O Arquivo Brasil e um agregador de episodios de novelas, series, programas de variedades, programas jornalisticos e esportivos brasileiros.</description>
+    <description lang="pt">O Arquivo Brasil e um agregador de episodios de novelas, series, programas de variedades, programas jornalÃ­sticos e esportivos brasileiros.</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -141,6 +141,23 @@
     <description lang="en">Esse Ã© o canal Porta dos Fundos. LanÃ§amos vÃ­deos originais, inÃ©ditos e exclusivos sempre Ã s segundas, quintas e sÃ¡bados Ã s 11h. :-)</description>
     <platform>all</platform>
   </extension>
+</addon>
+
+<addon id="plugin.video.sbtonline" name="SBT Online" version="1.0.0" provider-name="AddonBrasil">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+				<import addon="plugin.video.youtube" optional="true"/>
+    </requires>
+
+    <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+    </extension>
+
+    <extension point="xbmc.addon.metadata">
+        <summary>SBT Online</summary>
+        <description>O addon SBT Online reune os canais de videos oficiais do SBT</description>
+        <platform>all</platform>
+    </extension>
 </addon>
 
 <addon id="plugin.video.seriesonlinehd" name="SÃ©ries Online HD" version="1.0.1" provider-name="AddonBrasil">

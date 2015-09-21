@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="plugin.video.sbtonline" name="SBT Online" version="1.0.0" provider-name="AddonBrasil">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+				<import addon="plugin.video.youtube" optional="true"/>
+    </requires>
+		
+    <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+    </extension>
+		
+    <extension point="xbmc.addon.metadata">
+        <summary>SBT Online</summary>
+        <description>O addon SBT Online reune os canais de videos oficiais do SBT</description>
+        <platform>all</platform>
+    </extension>
+</addon>
