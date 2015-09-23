@@ -1,3 +1,6 @@
+[B]22/09/2015 - Versão 1.2.0[/B]
+- Criada categoria "EXTRAS" com novos programas
+
 [B]11/09/2015 - Versão 1.2.0[/B]
 - Modificação dos ícones do addon
 - Correção na resolução dos links das fontes dos vídeos
