@@ -5,10 +5,10 @@
 #########################################################################
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmc,xbmcaddon,HTMLParser,sys
+
 from xbmcgui import ListItem
 from BeautifulSoup import BeautifulSoup
 
-versao      = '2.0.0'
 addon_id    = 'plugin.video.animebrasil'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
 addonfolder = selfAddon.getAddonInfo('path')
@@ -17,17 +17,17 @@ fanart      = addonfolder + '/fanart.jpg'
 base        = 'http://anitubebr.xpg.uol.com.br/'
 
 def menuPrincipal():
-	addDir2('Categorias'    , base + 'categories'     , 10, artfolder + 'categorias.jpg')
-	addDir2('+ Recentes'    , base + 'videos/basic/mr', 20, artfolder + 'recentes.jpg')
-	addDir2('+ Visualizados', base + 'videos/basic/mv', 20, artfolder + 'visualizados.jpg')
-	addDir2('+ Comentados'  , base + 'videos/basic/md', 20, artfolder + 'comentados.jpg')
-	addDir2('+ Populares'   , base + 'videos/basic/tr', 20, artfolder + 'populares.jpg')
-	addDir2('Top Favoritos' , base + 'videos/basic/tf', 20, artfolder + 'favoritos.jpg')
-	addDir2('Em Destaque'   , base + 'videos/basic/rf', 20, artfolder + 'destaque.jpg')
-	addDir2('Pesquisa'      , base                    , 30, artfolder + 'pesquisa.jpg')
-	
-	xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-	xbmc.executebuiltin('Container.SetViewMode(50)')
+		addDir2('Categorias'    , base + 'categories'     , 10, artfolder + 'categorias.jpg')
+		addDir2('+ Recentes'    , base + 'videos/basic/mr', 20, artfolder + 'recentes.jpg')
+		addDir2('+ Visualizados', base + 'videos/basic/mv', 20, artfolder + 'visualizados.jpg')
+		addDir2('+ Comentados'  , base + 'videos/basic/md', 20, artfolder + 'comentados.jpg')
+		addDir2('+ Populares'   , base + 'videos/basic/tr', 20, artfolder + 'populares.jpg')
+		addDir2('Top Favoritos' , base + 'videos/basic/tf', 20, artfolder + 'favoritos.jpg')
+		addDir2('Em Destaque'   , base + 'videos/basic/rf', 20, artfolder + 'destaque.jpg')
+		addDir2('Pesquisa'      , base                    , 30, artfolder + 'pesquisa.jpg')
+		
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+		xbmc.executebuiltin('Container.SetViewMode(50)')
 
 def getCategorias(url):
 		link = openURL(url)
@@ -44,18 +44,12 @@ def getCategorias(url):
 				imgTemp  = categoria.a.img["src"]
 				plotTemp = categoria.a["title"].replace('Sinopse:', '').replace('Sinopse; ', '').replace('   ', '').encode('ascii', 'ignore')
 
-				print urlTemp
-				print titTemp
-				print imgTemp
-				print cleanHtml(plotTemp)
-				
 				temp = [urlTemp, titTemp,imgTemp,plotTemp] 
 				
 				a.append(temp)
 				
 		total = len(a)
 		
-
 		for url2, titulo, img, plot in a:
 				titulo = cleanHtml(titulo)
 				addDir(titulo,url2,20,img,True,total,plot)
@@ -75,7 +69,7 @@ def getEpisodios(url):
 		
 		soup = BeautifulSoup(link)
 		episodios = soup.findAll("li", { "class" : "mainList" })
-
+		
 		e = []
 		
 		for episodio in episodios:
@@ -88,8 +82,6 @@ def getEpisodios(url):
 				except:
 						pass
 				
-		e.sort()
-		
 		total = len(e)
 
 		for titulo, url2, img, plot in e:
@@ -166,39 +158,31 @@ def doPesquisa():
 
 ###################################################################################
 
-def addLink(name,url,iconimage):
-	ok=True
-	liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-	liz.setProperty('fanart_image', fanart)
-	liz.setInfo( type="Video", infoLabels={ "Title": name } )
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
-	return ok
-
 def addDir(name,url,mode,iconimage,pasta=True,total=1,plot=''):
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
-	ok=True
-	liz=xbmcgui.ListItem(name, iconImage="iconimage", thumbnailImage=iconimage)
-	liz.setProperty('fanart_image', iconimage)
-	liz.setInfo( type="video", infoLabels={ "title": name, "plot": plot } )
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta,totalItems=total)
-	return ok
+		u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
+		ok=True
+		liz=xbmcgui.ListItem(name, iconImage="iconimage", thumbnailImage=iconimage)
+		liz.setProperty('fanart_image', iconimage)
+		liz.setInfo( type="video", infoLabels={ "title": name, "plot": plot } )
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta,totalItems=total)
+		return ok
 
 def addDir2(name,url,mode,iconimage,pasta=True,total=1,plot=''):
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
-	ok=True
-	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-	liz.setProperty('fanart_image', fanart)
-	liz.setInfo( type="video", infoLabels={ "title": name, "plot": plot } )
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta,totalItems=total)
-	return ok
+		u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
+		ok=True
+		liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+		liz.setProperty('fanart_image', fanart)
+		liz.setInfo( type="video", infoLabels={ "title": name, "plot": plot } )
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta,totalItems=total)
+		return ok
 	
 def openURL(url):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()
-	return link
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+		response = urllib2.urlopen(req)
+		link=response.read()
+		response.close()
+		return link
 
 def cleanHtml(dirty):
     clean = re.sub('&quot;', '\"', dirty)
@@ -237,7 +221,6 @@ def get_params():
                                 
         return param
 
-      
 params    = get_params()
 url       = None
 name      = None
@@ -256,10 +239,10 @@ except : pass
 try    : iconimage=urllib.unquote_plus(params["iconimage"])
 except : pass
 
-print "Mode     : " + str(mode)
-print "URL      : " + str(url)
-print "Name     : " + str(name)
-print "Iconimage: " + str(iconimage)
+#print "Mode     : " + str(mode)
+#print "URL      : " + str(url)
+#print "Name     : " + str(name)
+#print "Iconimage: " + str(iconimage)
 
 if   mode == None : menuPrincipal()
 elif mode == 10   :	getCategorias(url)
