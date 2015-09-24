@@ -44,7 +44,7 @@ def getCategorias(url):
 				imgTemp  = categoria.a.img["src"]
 				plotTemp = categoria.a["title"].replace('Sinopse:', '').replace('Sinopse; ', '').replace('   ', '').encode('ascii', 'ignore')
 
-				temp = [urlTemp, titTemp,imgTemp,plotTemp] 
+				temp = [urlTemp, titTemp, imgTemp, plotTemp] 
 				
 				a.append(temp)
 				
@@ -102,7 +102,8 @@ def getEpisodios(url):
 
 def doPlay(url, name, iconimage):
 		link = openURL(url)
-		jwpURL = re.findall(r'<script type="text/javascript" src="http://anitubebr.xpg.uol.com.br/player/config.php\?key=(.*?)"></script>',link)[0]
+		
+		jwpURL = re.findall(r'<script type="text/javascript" src="http://anitubebr.xpg.uol.com.br/player/config.php.key=(.*?)"></script>',link)[0]
 		jwpURL = 'http://anitubebr.xpg.uol.com.br/player/config.php?key=' + jwpURL
 		
 		jwp = openURL(jwpURL)
@@ -137,6 +138,7 @@ def doPlay(url, name, iconimage):
 		
 		playlist = xbmc.PlayList(1)
 		playlist.clear()
+		
 		listitem = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 		listitem.setInfo("Video", {"Title":name})
 		listitem.setProperty('mimetype', 'video/mp4')

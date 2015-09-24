@@ -1,4 +1,8 @@
 ﻿
+Versão 2.0.2 - (24/09/2015)
+* Correção de última hora
+* Otimização de código
+
 Versão 2.0.1 - (24/09/2015)
 * Correção de um pequeno bug na listagem dos episódios
 * Leve otimização do codigo fonte
