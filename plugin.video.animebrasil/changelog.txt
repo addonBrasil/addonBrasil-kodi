@@ -1,5 +1,5 @@
 ﻿
-Versão 2.0.2 - (24/09/2015)
+Versão 2.0.3 - (24/09/2015)
 * Correção de última hora
 * Otimização de código
 

@@ -103,8 +103,9 @@ def getEpisodios(url):
 def doPlay(url, name, iconimage):
 		link = openURL(url)
 		
-		jwpURL = re.findall(r'<script type="text/javascript" src="http://anitubebr.xpg.uol.com.br/player/config.php.key=(.*?)"></script>',link)[0]
-		jwpURL = 'http://anitubebr.xpg.uol.com.br/player/config.php?key=' + jwpURL
+		jwpKEY = re.findall(r'key=(.*?)"></script>',link)[0]
+		
+		jwpURL = base + 'player/config.php?key=' + jwpKEY
 		
 		jwp = openURL(jwpURL)
 		
@@ -155,7 +156,7 @@ def doPesquisa():
 		if (keyb.isConfirmed()):
 			search = keyb.getText()
 			busca = urllib.quote(search)
-			url = 'http://anitube.xpg.uol.com.br/search/?search_id=' + str(busca)
+			url = base + 'search/?search_id=' + str(busca)
 			getEpisodios(url)
 
 ###################################################################################
