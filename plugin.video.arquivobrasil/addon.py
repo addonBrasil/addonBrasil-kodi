@@ -34,13 +34,16 @@ def menuPrincipal():
 		
 def menuExtras():
 		addDir('Malhação 2015'    , basex + '?novos=1&e=malhacao-2015'                , 40, imgsrv + 'malhacao.png')
+		addDir('Mister Brau'      , basex + '?novos=1&e=mister-brau'                  , 40, imgsrv + 'mister-brau.png')
 		addDir('Hora 1 da Notícia', basex + '?novos=1&e=hora-1'                       , 40, imgsrv + 'hora-1.png')
 		addDir('Jornal Hoje'      , basex + '?novos=1&e=jornal-hoje'                  , 40, imgsrv + 'jornal-hoje.png')
 		addDir('Bem Estar'        , basex + '?novos=1&e=bem-estar'                    , 40, imgsrv + 'bem-estar.png')
+		addDir('CQC'              , basex + '?novos=1&e=cqc'                          , 40, imgsrv + 'cqc.png')
 		addDir('É de Casa'        , basex + '?novos=1&e=e-de-casa'                    , 40, imgsrv + 'e-de-casa.png')
 		addDir('Encontro'         , basex + '?novos=1&e=encontro-com-fatima-bernardes', 40, imgsrv + 'encontro.png')
 		addDir('Esquenta'         , basex + '?novos=1&e=esquenta'                     , 40, imgsrv + 'esquenta.png')
 		addDir('Estrelas'         , basex + '?novos=1&e=estrelas'                     , 40, imgsrv + 'estrelas.png')
+		addDir('Mais Você'        , basex + '?novos=1&e=mais-voce'                    , 40, imgsrv + 'mais-voce.png')
 		addDir('Programa do Gugu' , basex + '?novos=1&e=programa-do-gugu'             , 40, imgsrv + 'gugu.png')
 		addDir('Programa Raul Gil', basex + '?novos=1&e=programa-raul-gil'            , 40, imgsrv + 'raul-gil.png')
 		addDir('Video Show'       , basex + '?novos=1&e=video-show'                   , 40, imgsrv + 'video-show.png')
@@ -70,6 +73,7 @@ def getListaCat(url, name):
 				titcat = categoria.text.replace('&#038;','&').encode('utf-8', 'ignore')
 				urlcat = categoria.a["href"]
 				imgcat = imgsrv + getImg(titcat)
+				
 				addDir(titcat, urlcat, 20, imgcat, totCategorias, True)				
 
 		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
@@ -172,7 +176,7 @@ def doPlay(url, name):
 		else:
 				msgDialog.update(100)
 				dialog = xbmcgui.Dialog()
-				dialog.ok("ARQUIVO BRASIL", "Video Indisponível", "Este vídeo ainda não esta disponível...", "Tente novamente em breve.")		
+				dialog.ok("ARQUIVO BRASIL", "Vídeo Indisponível", "Este vídeo ainda não esta disponível...", "Tente novamente em breve.")		
 				
 def doPlayExt(url, name):
 		link = openURL(url)
@@ -239,7 +243,7 @@ def doPlayExt(url, name):
 		else:
 				msgDialog.update(100)
 				dialog = xbmcgui.Dialog()
-				dialog.ok("ARQUIVO BRASIL", "Video Indisponível", "Este vídeo ainda não esta disponível...", "Tente novamente em breve.")		
+				dialog.ok("ARQUIVO BRASIL", "Vídeo Indisponível", "Este vídeo ainda não esta disponível...", "Tente novamente em breve.")		
 		
 def getURL2Play(url):
     try:
@@ -266,10 +270,6 @@ def getURL2Play(url):
                 result = re.compile('sources *: *\[.+?\]').findall(result)[-1]
                 result = re.compile('file *: *"(http.+?)"').findall(result)
 
-                #url = [i for i in result if not '.m3u8' in i]
-								
-                #if len(url) > 0: return '%s|Referer=%s' % (url[0], urllib.quote_plus('http://vidzi.tv/nplayer/jwplayer.flash.swf'))
-								
                 url = [i for i in result if '.m3u8' in i]
 								
                 if len(url) > 0: return url[0]
@@ -303,15 +303,6 @@ def openURL(url):
 		
 		return link
 		
-def addLink(name,url,iconimage):
-		ok = True
-		liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-		liz.setProperty('fanart_image', fanart)
-		liz.setInfo( type="Video", infoLabels={ "Title": name } )
-		ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
-		
-		return ok
-
 def addDir(name, url, mode, iconimage, pasta=True, total=1, plot=''):
 		u = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
 		ok = True
