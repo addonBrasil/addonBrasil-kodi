@@ -3,7 +3,7 @@
 # By AddonBrasil - 02/10/2015
 ##############################################################################
 
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmc,xbmcaddon,os, time
+import urllib, urllib2, re, xbmcplugin, xbmcgui, xbmc, xbmcaddon, os, time
 import json
 
 from resources.lib import control
@@ -22,6 +22,9 @@ fanart = addonfolder + '/fanart.jpg'
 
 base   = 'http://tocadoscinefilos.net.br/'
 imgsrv = 'http://cinecult.addonbrasil.tk/imgs/'
+
+try    : os.mkdir(datapath)
+except : pass
 
 ##############################################################################
 
@@ -97,8 +100,7 @@ def doPlay(url, name):
 		
 		link = openURL(url)
 		
-		msgDialog.create('CINE CULT', 'Resolvendo Servidores', name, 'Por favor aguarde...')
-		msgDialog.update(50)
+		msgDialog.update(50, 'Resolvendo Servidores', name, 'Por favor aguarde...')
 		
 		servidores = []
 		links      = []
@@ -142,8 +144,7 @@ def doPlay(url, name):
 		if   'openload'  in urlVideo : url2Play = getOpenLoad(urlVideo)
 		elif 'vidzi.tv'  in urlVideo : url2Play = getVidzi(urlVideo)
 				
-		msgDialog.create('CINE CULT', 'Abrindo Sinal', name, 'Por favor aguarde...')
-		msgDialog.update(75)
+		msgDialog.update(75, 'Abrindo Sinal', name, 'Por favor aguarde...')
 		
 		urlVideo   = url2Play[0]
 		urlLegenda = url2Play[1]
@@ -275,21 +276,20 @@ def getVidzi(url):
 				return [urlVideo, urlLegenda]
 				
 def doPesquisa(url):
-	keyb = xbmc.Keyboard('', 'CineCult - Pesquisa de Filmes')
-	keyb.doModal()
-	
-	if (keyb.isConfirmed()): 
-		search = keyb.getText()
-		parametro_pesquisa=urllib.quote(search)
-		url = 'http://tocadoscinefilos.net.br/?s=%s' % str(parametro_pesquisa)
-		getFilmes(url)
+		teclado = xbmc.Keyboard('', 'CineCult - Pesquisa de Filmes')
+		teclado.doModal()
+		
+		if (teclado.isConfirmed()): 
+				texto = teclado.getText()
+				pesquisa = urllib.quote(texto)
+				url = base + '?s=%s' % str(pesquisa)
+				getFilmes(url)
 
 def openConfig():
 		selfAddon.openSettings()
 		setViewMenu()
 		xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
-	
 ##############################################################################
 
 def setViewMenu() :
@@ -325,34 +325,18 @@ def getImg(texto):
 		texto = texto + '.png'
 		return texto
 		
-def cleanTexto(texto):
-		#texto = texto.lower()
-		texto = texto.replace('ç','c').replace('ã','a').replace('õ','o')
-		texto = texto.replace('â','a').replace('ê','e').replace('ô','o')
-		texto = texto.replace('á','a').replace('é','e').replace('í','i').replace('Í','i').replace('ó','o').replace('ú','u').replace('ü','u')
-		texto = texto.replace('Á','a')
-		#texto = texto.replace('&','').replace(' ', '-').replace('.', '-').replace(',', '-').replace('--','-')
-		#texto = texto + '.png'
-		return texto
-		
 def openURL(url):
 		req = urllib2.Request(url)
+		
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+		
 		response = urllib2.urlopen(req)
-		link = response.read()
+		link     = response.read()
+		
 		response.close()
 		
 		return link
 		
-def addLink(name,url,iconimage):
-		ok = True
-		liz = xbmcgui.ListItem(name, iconImage="Defaultfilme.png", thumbnailImage=iconimage)
-		liz.setProperty('fanart_image', fanart)
-		liz.setInfo( type="filme", infoLabels={ "Title": name } )
-		ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
-		
-		return ok
-
 def addDir(name, url, mode, iconimage, pasta=True, total=1, plot=''):
 		u = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
 		

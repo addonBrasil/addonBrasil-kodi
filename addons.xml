@@ -57,7 +57,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.cinecult" name="Cine Cult" provider-name="AddonBrasil" version="1.0.0">
+<addon id="plugin.video.cinecult" name="Cine Cult" provider-name="AddonBrasil" version="1.0.1">
 		<requires>
 				<import addon="xbmc.python" version="2.1.0"/>
 		</requires>
@@ -70,7 +70,7 @@
 				<language>en</language>
 				<platform>all</platform>
 				<summary lang="en">Cine Cult</summary>
-				<description lang="en">Assista aos melhores filmes cult, alternativos, classicos e raros, dublados e legendados.</description>
+				<description lang="en">Assista aos melhores filmes cult, alternativos, classicos e raros, com legendas embutidas automaticamente.</description>
 				<platform>all</platform>
 		</extension>
 </addon>
