@@ -1,0 +1,5 @@
+<settings>
+		<category label="Configurações">
+     <setting id="visu" type="enum" label="Visualização de Menu" values="Lista|Lista Grande|Miniatura" default="0" />
+   </category>
+</settings>

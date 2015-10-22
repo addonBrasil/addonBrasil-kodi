@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="plugin.video.ei" name="Esporte Interativo" version="1.0.0" provider-name="AddonBrasil">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+				<import addon="plugin.video.youtube" optional="true"/>
+    </requires>
+		
+    <extension point="xbmc.python.pluginsource" library="addon.py">
+        <provides>video</provides>
+    </extension>
+		
+    <extension point="xbmc.addon.metadata">
+        <summary>Esporte Interativo</summary>
+        <description>No Esporte interativo voce assiste a videos, tem acesso aos canais Esporte intrativo com qualidade HD e muito mais</description>
+        <platform>all</platform>
+    </extension>
+</addon>

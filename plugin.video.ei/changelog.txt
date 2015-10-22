@@ -1,0 +1,4 @@
+﻿
+Versão 1.0.0 - (21/10/2015)
+* Primeiro release do addon by AddonBrasil
+* Grade de programação dos canais ao vivo em versão beta
