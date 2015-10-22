@@ -3,34 +3,36 @@
 # By AddonBrasil - 28/07/2015
 #####################################################################
 
-import urllib,urllib2,re,xbmcplugin, xbmcaddon, xbmcgui, time
-import urlresolver, client, jsunpack
+import urllib,urllib2,re,xbmcplugin, xbmcaddon, xbmcgui, time, base64
+import urlresolver
 
-from BeautifulSoup import BeautifulSoup
+from resources.lib import client
+from resources.lib import jsunpack
+from resources.lib.BeautifulSoup import BeautifulSoup
 
 addon_id    = 'plugin.video.arquivobrasil'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
 addonfolder = selfAddon.getAddonInfo('path')
 
-icon      = addonfolder + '/icon.png'
-fanart    = addonfolder + '/fanart.jpg'
+icon    = addonfolder + '/icon.png'
+fanart  = addonfolder + '/fanart.jpg'
 
-base   = 'http://novelasgravadas.net/'
-basex  = 'http://tanoar.tv/'
-imgsrv = 'http://arquivobrasil.addonbrasil.tk/imgs/'
+base   = base64.b64decode('aHR0cDovL25vdmVsYXNncmF2YWRhcy5uZXQv')
+basex  = base64.b64decode('aHR0cDovL3Rhbm9hci50di8=')
+imgsrv = base64.b64decode('aHR0cDovL2FycXVpdm9icmFzaWwuYWRkb25icmFzaWwudGsvaW1ncy8=')
 
 #####################################################################
 
 def menuPrincipal():
-		addDir('Novelas'   , base, 10, imgsrv + 'novelas.jpg')
-		addDir('Séries'    , base, 10, imgsrv + 'series.jpg')
-		addDir('Jornalismo', base, 10, imgsrv + 'jornalismo.jpg')
-		addDir('Variedades', base, 10, imgsrv + 'variedades.jpg')
-		addDir('Esportes'  , base, 10, imgsrv + 'esportes.jpg')
-		addDir('Extras'    , base, 30, imgsrv + 'extras.jpg')
+		addDir('Novelas'      , base,  10, imgsrv + 'novelas.jpg')
+		addDir('Séries'       , base,  10, imgsrv + 'series.jpg')
+		addDir('Jornalismo'   , base,  10, imgsrv + 'jornalismo.jpg')
+		addDir('Variedades'   , base,  10, imgsrv + 'variedades.jpg')
+		addDir('Esportes'     , base,  10, imgsrv + 'esportes.jpg')
+		addDir('Extras'       , base,  30, imgsrv + 'extras.jpg')
+		addDir('Configurações', base, 999, imgsrv + 'config.jpg', False)
 
-		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-		xbmc.executebuiltin('Container.SetViewMode(500)')
+		setViewMenu()
 		
 def menuExtras():
 		addDir('Malhação 2015'    , basex + '?novos=1&e=malhacao-2015'                , 40, imgsrv + 'malhacao.png')
@@ -48,8 +50,7 @@ def menuExtras():
 		addDir('Programa Raul Gil', basex + '?novos=1&e=programa-raul-gil'            , 40, imgsrv + 'raul-gil.png')
 		addDir('Video Show'       , basex + '?novos=1&e=video-show'                   , 40, imgsrv + 'video-show.png')
 
-		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-		xbmc.executebuiltin('Container.SetViewMode(500)')
+		setViewMenu()
 		
 def getListaCat(url, name):
 		link = openURL(url)
@@ -76,8 +77,7 @@ def getListaCat(url, name):
 				
 				addDir(titcat, urlcat, 20, imgcat, totCategorias, True)				
 
-		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-		xbmc.executebuiltin('Container.SetViewMode(500)')
+		setViewMenu()
 		
 def getVideosCat(url, name, iconimage):
 		link  = openURL(url)
@@ -103,8 +103,7 @@ def getVideosCat(url, name, iconimage):
 		except :
 				pass
 				
-		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-		xbmc.executebuiltin('Container.SetViewMode(500)')
+		setViewVideos()
 		
 def getVideosExt(url, name, iconimage):
 		link  = openURL(url)
@@ -133,8 +132,7 @@ def getVideosExt(url, name, iconimage):
 		except :
 				pass
 				
-		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-		xbmc.executebuiltin('Container.SetViewMode(500)')
+		setViewVideos()
 		
 def doPlay(url, name):
 		link = openURL(url)
@@ -153,26 +151,40 @@ def doPlay(url, name):
 		try :
 				url2Rslv = re.findall('<IFRAME SRC="(.*?)" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=645 HEIGHT=355></IFRAME>', link)[0]
 				url2Rslv = url2Rslv.replace('embed-','')
+				url2Play = getURL2Play(url2Rslv)
+				needPlaylist = False
 		except:
 				url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
 				linkRslv = openURL(url2Rslv)
-				url2Play = re.findall('<location>(.*?)</location>', linkRslv)[0]
-		
-		url2Play = getURL2Play(url2Rslv)
+				url2Play = re.findall('<location>(.*?)</location>', linkRslv)
+				totu2p = len(url2Play)
+				needPlaylist = True
 		
 		msgDialog.update(75)
+
+		playlist = xbmc.PlayList(1)
+		playlist.clear()
 		
-		if url2Play:
-				liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
-				liz.setInfo('video', {'Title': name})
-				liz.setPath(url)
-				liz.setProperty('mimetype','video/mp4')
-				liz.setProperty('IsPlayable', 'true')
-				
-				playlist.add(url=url2Play, listitem=liz, index=7)
-						
+		if url2Play :
+				if needPlaylist:
+						for i in range(0,totu2p) :
+								liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
+								liz.setInfo('video', {'Title': name})
+								liz.setPath(url)
+								liz.setProperty('mimetype','video/mp4')
+								liz.setProperty('IsPlayable', 'true')
+								playlist.add(url2Play[i], liz)
+				else :
+						liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
+						liz.setInfo('video', {'Title': name})
+						liz.setPath(url)
+						liz.setProperty('mimetype','video/mp4')
+						liz.setProperty('IsPlayable', 'true')
+						playlist.add(url2Play, liz)
+								
 				msgDialog.update(100)
-				xbmc.Player(xbmc.PLAYER_CORE_AUTO).play(playlist)
+				
+				xbmc.Player().play(playlist,liz)
 		else:
 				msgDialog.update(100)
 				dialog = xbmcgui.Dialog()
@@ -278,7 +290,6 @@ def getURL2Play(url):
     except:
         return
 				
-				
 def getDmURL(vURL) :
 		urlVideo = urlresolver.HostedMediaFile(url=vURL).resolve()
 		
@@ -294,6 +305,34 @@ def getImg(texto):
 		texto = texto + '.png'
 		return texto
 		
+def openConfig():
+		selfAddon.openSettings()
+		setViewMenu()
+		xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+def setViewMenu() :
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+		
+		opcao = selfAddon.getSetting('menuVisu')
+		
+		if   opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
+		elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
+		elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+		
+def setViewVideos() :
+		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+
+		opcao = selfAddon.getSetting('videosVisu')
+
+		if   opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
+		elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
+		elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+		#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
+		#elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(508)")
+		#elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(504)")
+		#elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(503)")
+		#elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(515)")
+
 def openURL(url):
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -369,5 +408,7 @@ elif mode == 30   : menuExtras()
 elif mode == 40   : getVideosExt(url,name, iconimage)
 elif mode == 100  : doPlay(url, name)
 elif mode == 200  : doPlayExt(url, name)
+elif mode == 999  : openConfig()
+
 	
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

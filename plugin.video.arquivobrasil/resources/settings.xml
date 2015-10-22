@@ -1,0 +1,6 @@
+<settings>
+		<category label="Configurações">
+     <setting id="menuVisu" type="enum" label="Visualização de Menu" values="Lista|Lista Grande|Miniatura" default="0" />
+     <setting id="videosVisu" type="enum" label="Visualização dos Videos" values="Lista|Lista Grande|Miniatura" default="2" />
+   </category>
+</settings>
