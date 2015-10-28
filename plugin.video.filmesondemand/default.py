@@ -10,20 +10,21 @@ from metahandler import metahandlers
 
 ###############################################################################
 
-versao = '1.0.0'
-addon_id = 'plugin.video.filmesondemand'
+addon_id  = 'plugin.video.filmesondemand'
 selfAddon = xbmcaddon.Addon(id=addon_id)
-metaget = metahandlers.MetaData(preparezip=False)
-datapath= xbmc.translatePath(selfAddon.getAddonInfo('profile'))
-addon = Addon(addon_id, sys.argv)
+datapath  = xbmc.translatePath(selfAddon.getAddonInfo('profile'))
+addon       = Addon(addon_id, sys.argv)
 addonfolder = selfAddon.getAddonInfo('path')
-icon   = addonfolder + '/icon.png'
-fanart = addonfolder + '/fanart.jpg'
+icon      = addonfolder + '/icon.png'
+fanart    = addonfolder + '/fanart.jpg'
 artfolder = addonfolder + '/resources/art/'
 
+metaget  = metahandlers.MetaData(preparezip=False)
 metaset = selfAddon.getSetting('enable_meta')
 
 base = 'http://fod.addonbrasil.tk'
+
+agent = "Mozilla%2F5.0%20(iPad%3B%20CPU%20OS%206_0%20like%20Mac%20OS%20X)%20AppleWebKit%2​F536.26%20(KHTML%2C%20like%20Gecko)%20Version%2F6.0%20Mobile%2F10A5355d%20Safari​%2F8536.25"
 
 ###############################################################################
 
@@ -33,11 +34,9 @@ def menuPrincipal():
 		addDir2('LEGENDADOS', base, 22, artfolder + 'legendados.png')
 		addDir3('CONFIGURAÇÕES',' ---',99, artfolder + 'config.png')
 		
-		
 def menuLetras(url, name):
 		if name == "LISTA"      : modo = 20
 		if name == "DUBLADOS"   : modo = 21
-		#if name == "LEGENDADOS" : modo = 22
 
 		addDir2('A', url, modo, artfolder + 'a.png')
 		addDir2('B', url, modo, artfolder + 'b.png')
@@ -75,27 +74,24 @@ def getFilmes(url, name):
 				titulo = params[0].encode('utf-8', 'ignore').replace('-', ' ').replace(' LEG',' (Legendado)')
 				link   = params[1].replace(' http', 'http')
 				
-				
 				if mode == 22 :
-						if '(Legendado)' in titulo: 
-								#if titulo[:1] == name :
+						if '(Legendado)' in titulo : 
 								addDir(titulo, link, 100, '',1,False)
+								
 				elif mode == 21:
 						if not '(Legendado)' in titulo: 
 								if titulo[:1] == name :
 									addDir(titulo, link, 100, '',1,False)
+									
 				else:
 						if titulo[:1] == name :
 							addDir(titulo, link, 100, '',1,False)
 
-		if metaset=='true':
-				setView('movies', 'MAIN')
-		else: 
-				xbmc.executebuiltin("Container.SetViewMode(50)")
+		if metaset=='true': setView('movies', 'MAIN')
+		else              : xbmc.executebuiltin("Container.SetViewMode(50)")
 				
 def getConfig():
 	xbmcaddon.Addon(addon_id).openSettings()
-		
 
 def addDir(name,url,mode,iconimage,itemcount=1,isFolder=True):
 		if metaset=='true':
@@ -164,6 +160,8 @@ def doPlay(url, name, iconimage):
 		
 		try:
 				for link in links:
+						link = link.strip()
+						link = link + "|User-agent=" + agent
 						listitem = xbmcgui.ListItem(name, thumbnailImage=iconimage)
 						listitem.setInfo('video', {'Title': name})
 						playlist.add(url=link, listitem=listitem, index=7)
@@ -173,23 +171,16 @@ def doPlay(url, name, iconimage):
 				pass
 				
 def setView(content, viewType):	
-	if content : xbmcplugin.setContent(int(sys.argv[1]), content)
-	
-	print "content " + str(xbmcplugin.setContent(int(sys.argv[1]), content))
-	print "content " + str(content)
-	
-	wvisu = selfAddon.getSetting('MAIN')
-	
-	print "WVISU " + wvisu
-	
-	if wvisu   == "0" : visuID = 500
-	elif wvisu == "1" : visuID = 515
-	elif wvisu == "2" : visuID = 50
-	elif wvisu == "3" : visuID = 51
-	
-	print "visuID " + str(visuID)
-	
-	if selfAddon.getSetting('auto-view')=='true' : xbmc.executebuiltin("Container.SetViewMode(%s)" % visuID )
+		if content : xbmcplugin.setContent(int(sys.argv[1]), content)
+
+		wvisu = selfAddon.getSetting('MAIN')
+
+		if wvisu   == "0" : visuID = 500
+		elif wvisu == "1" : visuID = 515
+		elif wvisu == "2" : visuID = 50
+		elif wvisu == "3" : visuID = 51
+
+		if selfAddon.getSetting('auto-view')=='true' : xbmc.executebuiltin("Container.SetViewMode(%s)" % visuID )
 
 ###############################################################################
 

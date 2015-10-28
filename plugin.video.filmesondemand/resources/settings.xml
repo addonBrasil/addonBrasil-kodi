@@ -1,7 +1,12 @@
 <settings>
-<category label="Configurações">
-	<setting id="enable_meta" type="bool" label="Habilitar Metadados de Filmes" default="true"/>
-	<setting id="auto-view" type="bool" label="Habilitar Auto Visualização" default="true" enable="!eq(-1,false)"/>
-	<setting id="MAIN" type="enum" label="Visualização Padrão (confluence)" values="Miniatura|Info Filmes|Lista|Lista Grande" default="1"/>
-</category>
+		<category label="Configurações">
+			<setting id="enable_meta" type="bool" label="Habilitar Metadados de Filmes" default="true"/>
+			<setting id="auto-view" type="bool" label="Habilitar Auto Visualização" default="true" enable="!eq(-1,false)"/>
+			<setting id="MAIN" type="enum" label="Visualização Padrão (confluence)" values="Miniatura|Lista|Lista Grande" default="1"/>
+		</category>
+    <category label="Visualizações">
+      <setting label="Definições de visualização:" type="lsep" />
+     <setting id="menuView" type="enum" label="Vista de Menu" values="Lista|Lista Grande" default="0"/>
+     <setting id="filmes" type="enum" label="Vista de Filmes e Séries" values="Lista|Lista Grande|Miniatura|Posters|Fanart|Media Info 1|Media Info 2|Media Info 3" default="0"/>
+   </category>
 </settings>
