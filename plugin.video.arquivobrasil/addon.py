@@ -153,7 +153,7 @@ def doPlay(url, name):
 				url2Rslv = url2Rslv.replace('embed-','')
 				url2Play = getURL2Play(url2Rslv)
 				needPlaylist = False
-		except:
+		except :
 				url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
 				linkRslv = openURL(url2Rslv)
 				url2Play = re.findall('<location>(.*?)</location>', linkRslv)
@@ -168,12 +168,20 @@ def doPlay(url, name):
 		if url2Play :
 				if needPlaylist:
 						for i in range(0,totu2p) :
+								urlFinal = url2Play[i]
+								
+								if 'youtube' in urlFinal :
+										ytID = urlFinal.partition('v=')
+										ytID = ytID[2]
+										
+										urlFinal = 'plugin://plugin.video.youtube/play/?video_id=' + str(ytID)
+
 								liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
 								liz.setInfo('video', {'Title': name})
-								liz.setPath(url)
+								liz.setPath(urlFinal)
 								liz.setProperty('mimetype','video/mp4')
 								liz.setProperty('IsPlayable', 'true')
-								playlist.add(url2Play[i], liz)
+								playlist.add(urlFinal, liz)
 				else :
 						liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
 						liz.setInfo('video', {'Title': name})
