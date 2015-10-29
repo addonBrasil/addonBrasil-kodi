@@ -6,6 +6,8 @@ import xbmc,xbmcaddon,xbmcgui,xbmcplugin,urllib,urllib2,os,re,sys,datetime,time
 
 ###############################################################################
 
+from resources.lib.UniversalAnalytics import Tracker
+
 addon_id    = 'plugin.video.lusotv'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
 addonfolder = selfAddon.getAddonInfo('path')
@@ -13,19 +15,43 @@ icon        = addonfolder + '/icon.png'
 fanart      = addonfolder + '/fanart.jpg'
 base        = 'http://lusotv.addonbrasil.tk/'
 
+ga = {
+	"enabled"    : True,
+	"UA"         : 'UA-67989726-1',
+	"appName"    : selfAddon.getAddonInfo("name"),
+	"appVersion" : selfAddon.getAddonInfo("version"),
+	"appId"      : selfAddon.getAddonInfo("id")
+}
+
+tracker = Tracker.create(ga["UA"]);
+tracker.set("appName", ga["appName"]);
+tracker.set("appVersion", ga["appVersion"]);
+tracker.set("appId", ga["appId"]);
+
+#ga["enabled"] = True;
+
+if (selfAddon.getSetting("uuid") == ""):
+	selfAddon.setSetting("uuid", tracker.params["cid"]);
+else:
+	tracker.set("clientId", selfAddon.getSetting("uuid"));
+
 ###############################################################################
 
 def menuPrincipal(url):
+		tracker.send("screenview", screenName="Menu Principal")
+
 		getMenu(url)
 		
-def getMenu(url):
+def getMenu(url, name):
+		tracker.send("screenview", screenName="Get Menu " + name)
+
 		linhas = urllib2.urlopen(url).readlines()
 		totLines = len(linhas)
 		
 		for linha in linhas :
 				linha = linha.replace('\n','')
-		
-				if not '#' in linha :
+				
+				if linha[:1] != '#' :
 						params = linha.split(' | ')
 						
 						if params[0] != '' :
@@ -40,14 +66,16 @@ def getMenu(url):
 		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 		xbmc.executebuiltin("Container.SetViewMode(500)")
 		
-def getCanais(url):
+def getCanais(url, name):
+		tracker.send("screenview", screenName="Get Canais - "+ name)
+
 		linhas = urllib2.urlopen(url).readlines()
 		totLinhas = len(linhas)
 
 		for linha in linhas :
 				linha = linha.replace('\r\n','')
 				
-				if not '#' in linha :
+				if linha[:1] != '#' :
 						params = linha.split(' | ')
 						
 						if params[0] != '' :
@@ -75,6 +103,8 @@ def addDir(name, url, mode, iconimage, total=0, pasta=True ,fanart=fanart):
 			
 def doPlay(url, name, iconimage):
 		links = url.split(',')
+		
+		tracker.send("event", "Usage", "Play Video - " + name, "episode", screenName="Play Screen");
 		
 		playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 		playlist.clear()
@@ -130,9 +160,26 @@ except : pass
 #print "URL  : " + str(url)
 #print "Name : " + str(name)
 
-if   mode == None : menuPrincipal(url=base+'?a=menu.ltv')
-elif mode == 1    : getMenu(url)
-elif mode == 10   : getCanais(url)
+if  mode == None : 
+		try : 
+				Tracker
+		except NameError:
+				from UniversalAnalytics import Tracker;
+				tracker = Tracker.create(ga["UA"]);
+				tracker.set("appName", ga["appName"]);
+				tracker.set("appVersion", ga["appVersion"]);
+				tracker.set("appId", ga["appId"]);
+				
+				if (selfAddon.getSetting("uuid") == ""):
+					selfAddon.setSetting("uuid", tracker.params["cid"]);
+				else:
+					tracker.set("clientId", selfAddon.getSetting("uuid"));
+			
+		tracker.send("event", "Usage", "install", screenName="Menu Principal")
+
+		menuPrincipal(url=base+'?a=menu.ltv')
+elif mode == 1    : getMenu(url, name)
+elif mode == 10   : getCanais(url, name)
 elif mode == 100  : doPlay(url, name, iconimage)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
