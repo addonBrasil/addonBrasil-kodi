@@ -42,8 +42,8 @@ def menuPrincipal(url):
 
 		getMenu(url)
 		
-def getMenu(url, name):
-		tracker.send("screenview", screenName="Get Menu " + name)
+def getMenu(url):
+		tracker.send("screenview", screenName="Get Menu")
 
 		linhas = urllib2.urlopen(url).readlines()
 		totLines = len(linhas)

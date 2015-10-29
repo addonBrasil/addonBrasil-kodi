@@ -1,4 +1,4 @@
-﻿Versão 1.1.0 - (29/10/2015)
+﻿Versão 1.1.2 - (29/10/2015)
 * Alterações necessárias para manutenção e acompanhemento do addon
 * Perfumaria no codigo
 
