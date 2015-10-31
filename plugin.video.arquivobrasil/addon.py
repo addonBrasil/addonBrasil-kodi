@@ -1,5 +1,6 @@
-#!/usr/bin/env python
+#####################################################################
 # -*- coding: utf-8 -*-
+# Addon : Arquivo Brasil
 # By AddonBrasil - 28/07/2015
 #####################################################################
 
@@ -9,6 +10,7 @@ import urlresolver
 from resources.lib import client
 from resources.lib import jsunpack
 from resources.lib.BeautifulSoup import BeautifulSoup
+from resources.lib.UniversalAnalytics import Tracker
 
 addon_id    = 'plugin.video.arquivobrasil'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
@@ -20,6 +22,26 @@ fanart  = addonfolder + '/fanart.jpg'
 base   = base64.b64decode('aHR0cDovL25vdmVsYXNncmF2YWRhcy5uZXQv')
 basex  = base64.b64decode('aHR0cDovL3Rhbm9hci50di8=')
 imgsrv = base64.b64decode('aHR0cDovL2FycXVpdm9icmFzaWwuYWRkb25icmFzaWwudGsvaW1ncy8=')
+
+ga = {
+	"enabled"    : False,
+	"UA"         : 'UA-67989726-3',
+	"appName"    : selfAddon.getAddonInfo("name"),
+	"appVersion" : selfAddon.getAddonInfo("version"),
+	"appId"      : selfAddon.getAddonInfo("id")
+}
+
+tracker = Tracker.create(ga["UA"]);
+tracker.set("appName", ga["appName"]);
+tracker.set("appVersion", ga["appVersion"]);
+tracker.set("appId", ga["appId"]);
+
+ga["enabled"] = True;
+
+if (selfAddon.getSetting("uuid") == ""):
+	selfAddon.setSetting("uuid", tracker.params["cid"]);
+else:
+	tracker.set("clientId", selfAddon.getSetting("uuid"));
 
 #####################################################################
 
@@ -49,7 +71,9 @@ def menuExtras():
 		addDir('Programa do Gugu' , basex + '?novos=1&e=programa-do-gugu'             , 40, imgsrv + 'gugu.png')
 		addDir('Programa Raul Gil', basex + '?novos=1&e=programa-raul-gil'            , 40, imgsrv + 'raul-gil.png')
 		addDir('Video Show'       , basex + '?novos=1&e=video-show'                   , 40, imgsrv + 'video-show.png')
-
+		
+		tracker.send("screenview", screenName="Menu Extras")
+		
 		setViewMenu()
 		
 def getListaCat(url, name):
@@ -75,7 +99,9 @@ def getListaCat(url, name):
 				urlcat = categoria.a["href"]
 				imgcat = imgsrv + getImg(titcat)
 				
-				addDir(titcat, urlcat, 20, imgcat, totCategorias, True)				
+				addDir(titcat, urlcat, 20, imgcat, totCategorias, True)		
+
+		tracker.send("screenview", screenName="Listagem da Categoria - " + name)
 
 		setViewMenu()
 		
@@ -102,6 +128,8 @@ def getVideosCat(url, name, iconimage):
 						break
 		except :
 				pass
+				
+		tracker.send("screenview", screenName="Lista de Videos Categoria - "+ name)
 				
 		setViewVideos()
 		
@@ -132,11 +160,13 @@ def getVideosExt(url, name, iconimage):
 		except :
 				pass
 				
+		tracker.send("screenview", screenName="Listagem de Videos Extras - "+ name)
+				
 		setViewVideos()
 		
 def doPlay(url, name):
 		link = openURL(url)
-
+		
 		pg = 0
 		msgDialog = xbmcgui.DialogProgress()
 
@@ -191,6 +221,8 @@ def doPlay(url, name):
 						playlist.add(url2Play, liz)
 								
 				msgDialog.update(100)
+				
+				tracker.send("event", "Usage", "Play Video - " + name, "video", screenName="Play Screen");
 				
 				xbmc.Player().play(playlist,liz)
 		else:
@@ -258,6 +290,8 @@ def doPlayExt(url, name):
 									i+=1
 						
 					msgDialog.update(100)
+					
+					tracker.send("event", "Usage", "Play Video Extra - " + name, "video", screenName="Play Screen Extra");
 				
 					xbmc.Player(xbmc.PLAYER_CORE_AUTO).play(playlist)
 		else:
@@ -299,7 +333,7 @@ def getURL2Play(url):
         return
 				
 def getDmURL(vURL) :
-		urlVideo = urlresolver.HostedMediaFile(url=vURL).resolve()
+		urlVideo = urlresolver.resolve(vURL)
 		
 		if urlVideo : return urlVideo
 		else        : return ''
@@ -315,7 +349,11 @@ def getImg(texto):
 		
 def openConfig():
 		selfAddon.openSettings()
+
+		tracker.send("screenview", screenName="Configurações")
+		
 		setViewMenu()
+		
 		xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def setViewMenu() :
@@ -335,11 +373,6 @@ def setViewVideos() :
 		if   opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
 		elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
 		elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-		#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
-		#elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(508)")
-		#elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(504)")
-		#elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(503)")
-		#elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(515)")
 
 def openURL(url):
 		req = urllib2.Request(url)
@@ -409,14 +442,32 @@ except : pass
 
 #####################################################################
 
-if   mode == None : menuPrincipal()
-elif mode == 10   : getListaCat(url, name)
-elif mode == 20   : getVideosCat(url,name, iconimage)
-elif mode == 30   : menuExtras()
-elif mode == 40   : getVideosExt(url,name, iconimage)
-elif mode == 100  : doPlay(url, name)
-elif mode == 200  : doPlayExt(url, name)
-elif mode == 999  : openConfig()
+if mode == None : 
+		try : 
+				Tracker
+		except NameError:
+				from UniversalAnalytics import Tracker;
+				tracker = Tracker.create(ga["UA"]);
+				tracker.set("appName", ga["appName"]);
+				tracker.set("appVersion", ga["appVersion"]);
+				tracker.set("appId", ga["appId"]);
+				
+				if (selfAddon.getSetting("uuid") == ""):
+					selfAddon.setSetting("uuid", tracker.params["cid"]);
+				else:
+					tracker.set("clientId", selfAddon.getSetting("uuid"));
+			
+		tracker.send("event", "Usage", "install", screenName="Menu Principal")
+
+		menuPrincipal()
+		
+elif mode == 10  : getListaCat(url, name)
+elif mode == 20  : getVideosCat(url, name, iconimage)
+elif mode == 30  : menuExtras()
+elif mode == 40  : getVideosExt(url, name, iconimage)
+elif mode == 100 : doPlay(url, name)
+elif mode == 200 : doPlayExt(url, name)
+elif mode == 999 : openConfig()
 
 	
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
