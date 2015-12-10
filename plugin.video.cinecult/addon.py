@@ -11,6 +11,7 @@ from resources.lib import client
 from resources.lib import jsunpack
 from resources.lib import captcha
 from resources.lib.BeautifulSoup import BeautifulSoup
+from resources.lib.UniversalAnalytics import Tracker
 
 addon_id    = 'plugin.video.cinecult'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
@@ -26,9 +27,29 @@ imgsrv = 'http://cinecult.addonbrasil.tk/imgs/'
 try    : os.mkdir(datapath)
 except : pass
 
+ga = {
+	"enabled"    : True,
+	"UA"         : 'UA-67989726-2',
+	"appName"    : selfAddon.getAddonInfo("name"),
+	"appVersion" : selfAddon.getAddonInfo("version"),
+	"appId"      : selfAddon.getAddonInfo("id")
+}
+
+tracker = Tracker.create(ga["UA"]);
+tracker.set("appName", ga["appName"]);
+tracker.set("appVersion", ga["appVersion"]);
+tracker.set("appId", ga["appId"]);
+
+if (selfAddon.getSetting("uuid") == ""):
+	selfAddon.setSetting("uuid", tracker.params["cid"]);
+else:
+	tracker.set("clientId", selfAddon.getSetting("uuid"));
+
 ##############################################################################
 
 def menuPrincipal():
+		tracker.send("screenview", screenName="Menu Principal")
+
 		addDir('Filmes'       , base,  10, imgsrv + '_filmes.png')
 		addDir('Gêneros'      , base,  20, imgsrv + '_generos.png')
 		addDir('Décadas'      , base,  20, imgsrv + '_decadas.png')
@@ -39,6 +60,8 @@ def menuPrincipal():
 		setViewMenu()
 		
 def getMenus(url, name):
+		tracker.send("screenview", screenName="Menu " + name)
+
 		link = openURL(url)
 		soup = BeautifulSoup(link)
 		conteudo = soup("div", {"class" : "primarymenu"})
@@ -64,7 +87,9 @@ def getMenus(url, name):
 
 		setViewMenu()
 		
-def getFilmes(url):
+def getFilmes(url, name) :
+		tracker.send("screenview", screenName="Lista Filmes " + name)
+
 		link  = openURL(url)
 		soup  = BeautifulSoup(link)
 		
@@ -73,24 +98,25 @@ def getFilmes(url):
 		
 		totFilmes = len(filmes)
 		
-		for filme in filmes:
+		for filme in filmes :
 				titF = filme.img["alt"].encode('utf-8', 'ignore')
 				urlF = filme.a["href"]
 				imgF = filme.img["src"] 
+				
 				addDir(titF, urlF, 100, imgF, False, totFilmes)
 				
 		try :
-				proximas = re.findall('<link rel="next" href="(.*?)" />', link)		
+				proximas = re.compile('<li class="burada"><a href=".*?">.*?</a></li> <li><a href="(.*?)">.*?</a></li>',re.DOTALL).findall(link)
+                               
+				for proxima in proximas:
+						addDir('Próxima Página >>', proxima, 10, imgsrv + '_proxima.png')
+						break
 		except :
-				proximas = re.findall('<li class="burada"><a href=".*?">.*?</a></li> <li><a href="(.*?)">.*?</a></li>', link)
-				
-		for proxima in proximas:
-				addDir('Próxima Página >>', proxima, 10, imgsrv + '_proxima.png')
-				break
+				pass
 				
 		setViewFilmes()
 
-def doPlay(url, name):
+def doPlay(url, name) :
 		nomefilme = name
 		
 		msgDialog = xbmcgui.DialogProgress()
@@ -149,7 +175,9 @@ def doPlay(url, name):
 		urlVideo   = url2Play[0]
 		urlLegenda = url2Play[1]
 		
-		if urlVideo:
+		if not 'Captcha' in urlVideo :
+				tracker.send("event", "Usage", "Play Video - " + name, "movie", screenName="Play Screen");
+		
 				playlist = xbmc.PlayList(1)
 				playlist.clear()
 		
@@ -189,9 +217,11 @@ def doPlay(url, name):
 								pass
 				
 		else:
+				tracker.send("event", "Erro", "Erro Captcha", "error", screenName="Play Screen");
+
 				msgDialog.update(100)
 				dialog = xbmcgui.Dialog()
-				dialog.ok("CINE CULT", "Filme Indisponível", "Este filme ainda não esta disponível...", "Tente novamente em breve.")		
+				dialog.ok("CINE CULT", "ERRO CAPTCHA", 'Desculpe, o captcha não foi digitado corretamente !', "Por favor tente novamente...")
 				
 def getOpenLoad(url):
 		link = client.request(url)
@@ -208,7 +238,7 @@ def getOpenLoad(url):
 
 		result = client.request(url)
 		result = json.loads(result)
-
+		
 		cap = result['result']['captcha_url']
 
 		if  not cap == None : cap = captcha.keyboard(cap)
@@ -222,7 +252,10 @@ def getOpenLoad(url):
 		result = client.request(url)
 		result = json.loads(result)
 		
-		urlVideo = result['result']['url'] + '?mime=true'
+		if 'Captcha not solved correctly' in result['msg'] :
+				urlVideo = result['msg']
+		else :
+				urlVideo = result['result']['url'] + '?mime=true'
 
 		return [urlVideo, urlLegenda]
 		
@@ -276,16 +309,23 @@ def getVidzi(url):
 				return [urlVideo, urlLegenda]
 				
 def doPesquisa(url):
+		tracker.send("screenview", screenName="Search Screen")
+
 		teclado = xbmc.Keyboard('', 'CineCult - Pesquisa de Filmes')
 		teclado.doModal()
 		
 		if (teclado.isConfirmed()): 
 				texto = teclado.getText()
 				pesquisa = urllib.quote(texto)
+				
+				tracker.send("event", "Usage", "Pesquisa por " + str(pesquisa), "search", screenName="Search Screen");
+
 				url = base + '?s=%s' % str(pesquisa)
-				getFilmes(url)
+				getFilmes(url, name)
 
 def openConfig():
+		tracker.send("screenview", screenName="Config Screen")
+
 		selfAddon.openSettings()
 		setViewMenu()
 		xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -338,6 +378,9 @@ def openURL(url):
 		return link
 		
 def addDir(name, url, mode, iconimage, pasta=True, total=1, plot=''):
+		nomeFilme = name.split(' (')
+		nomeFilme = nomeFilme[0]
+		
 		u = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
 		
 		ok = True
@@ -347,6 +390,11 @@ def addDir(name, url, mode, iconimage, pasta=True, total=1, plot=''):
 		liz.setProperty('fanart_image', fanart)
 		liz.setInfo(type = "Video", infoLabels = {"title": name, "plot": plot})
 		
+		cm = []
+		cm.append(('[COLOR gold]Informações do Filme[/COLOR]', 'XBMC.RunScript(script.extendedinfo,info=extendedinfo,name=%s)' % nomeFilme))
+		
+		liz.addContextMenuItems(cm, replaceItems=False)
+
 		ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=pasta, totalItems=total)
 
 		return ok
@@ -393,6 +441,22 @@ except : pass
 try    : mode = int(params["mode"])
 except : pass
 
+try : 
+		Tracker
+except NameError:
+		from resources.lib.UniversalAnalytics import Tracker;
+		tracker = Tracker.create(ga["UA"]);
+		tracker.set("appName", ga["appName"]);
+		tracker.set("appVersion", ga["appVersion"]);
+		tracker.set("appId", ga["appId"]);
+		
+		if (selfAddon.getSetting("uuid") == ""):
+				selfAddon.setSetting("uuid", tracker.params["cid"]);
+		else:
+				tracker.set("clientId", selfAddon.getSetting("uuid"));
+	
+tracker.send("event", "Usage", "install", screenName="Menu Principal")
+
 #print "Mode: "+str(mode)
 #print "URL: "+str(url)
 #print "Name: "+str(name)
@@ -401,7 +465,7 @@ except : pass
 ##############################################################################
 
 if   mode == None : menuPrincipal()
-elif mode == 10   : getFilmes(url)
+elif mode == 10   : getFilmes(url, name)
 elif mode == 20   : getMenus(url,name)
 elif mode == 30   : doPesquisa(url)
 elif mode == 100  : doPlay(url, name)

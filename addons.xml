@@ -57,9 +57,10 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.cinecult" name="Cine Cult" provider-name="AddonBrasil" version="1.0.1">
+<addon id="plugin.video.cinecult" name="Cine Cult" version="1.0.2" provider-name="AddonBrasil">
 		<requires>
 				<import addon="xbmc.python" version="2.1.0"/>
+        <import addon="script.extendedinfo" version="3.0.0"/>
 		</requires>
 
 		<extension library="addon.py" point="xbmc.python.pluginsource">
@@ -89,8 +90,8 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="pt_BR">Cinema Interativo</summary>
     <description lang="pt_BR">
-			No addon Cinema Interativo vocêª assiste filmes legendados e dublados com quaidade HD, separados por categorias e anos, tudo com um so clique
-			e ainda pode ver as informações ou assistir ao trailer do filme no submenu do addon (Botão esquerdo do mouse ou tecla "C").
+			No addon Cinema Interativo vocÃª assiste filmes legendados e dublados com quaidade HD, separados por categorias e anos, tudo com um so clique
+			e ainda pode ver as informaÃ§Ãµes ou assistir ao trailer do filme no submenu do addon (BotÃ£o esquerdo do mouse ou tecla "C").
 		</description>
 		<language>pt_BR</language>
 		<platform>all</platform>

@@ -1,6 +1,12 @@
-[B]07/10/2015 - Versão 1.0.1[/B]
-- Correção de um pequeno bug da criação do datapath, necessário para mostrar o captcha
+[B]10/12/2015 - Versao 1.0.2[/B]
+- Correcao de um bug na paginacao dos filmes
+- Adicionada opcao de Informacoes dos Filmes no submenu (ExtendedInfo Script)
+- Alteracoeses necessarias para manutencao e acompanhemento do addon
+- Perfumaria no codigo
+
+[B]07/10/2015 - Versao 1.0.1[/B]
+- Correcao de um pequeno bug da criacao do datapath, necessario para mostrar o captcha
 - Pequena perfumaria no codigo
 
-[B]02/10/2015 - Versão 1.0.0[/B]
+[B]02/10/2015 - Versao 1.0.0[/B]
 - Release incial do addon by AddonBrasil
