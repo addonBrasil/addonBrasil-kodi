@@ -70,7 +70,6 @@ def getFilmes(url):
 		for filme in filmes:
 				titF = filme.img["alt"].encode('utf-8', 'ignore')
 				titF = titF.replace('Assistir ','').replace('Filme ','')
-				print titF
 				urlF = filme.a["href"].encode('utf-8', 'ignore')
 				imgF = filme.img["src"].encode('utf-8', 'ignore')
 				
@@ -140,13 +139,14 @@ def player(name,url,iconimage):
 						if not 'Principal' in titS :
 								if not 'DropVideo' in titS :
 										if not 'FlashX' in titS :
-												if not 'Youwatch' in titS :
-														if not 'Ok.ru' in titS :
-																idS = servers1[i]["data-pid"]
+												if not 'Vídeo PW' in titS :
+														if not 'YouWatch' in titS :
+																if not 'Ok.ru' in titS :
+																		idS = servers1[i]["data-pid"]
 
-																titsT.append(titS)
-																idsT.append(idS)
-										
+																		titsT.append(titS)
+																		idsT.append(idS)
+												
 		try :
 				servers2 = conteudo[1]("li")
 				totS2    = len(servers2)
@@ -160,12 +160,13 @@ def player(name,url,iconimage):
 								if not 'Principal' in titS :
 										if not 'DropVideo' in titS :
 												if not 'FlashX' in titS :
-														if not 'Youwatch' in titS :
-																if not 'Ok.ru' in titS :
-																		idS = servers2[i]["data-pid"]
+														if not 'Vídeo PW' in titS :
+																if not 'YouWatch' in titS :
+																		if not 'Ok.ru' in titS :
+																				idS = servers2[i]["data-pid"]
 
-																		titsT.append(titS)
-																		idsT.append(idS)
+																				titsT.append(titS)
+																				idsT.append(idS)
 		except :
 				pass
 		
@@ -302,13 +303,7 @@ def getInfo(url)	:
 
 def playTrailer(name, url,iconimage):
 		link = openURL(url)
-		
-		iFrame = re.findall('<iframe width="100%" height="100%" src="(.*?)"', link)[0]
-		
-		print iFrame
-		
-		tSplit = iFrame.split('embed/')
-		ytID   = tSplit[1]
+		ytID = re.findall('<iframe width=".*?" height=".*?" src="http://www.youtube.com/embed/(.*?)" frameborder="0" allowfullscreen></iframe>', link)[0]
 		
 		xbmc.executebuiltin('XBMC.RunPlugin("plugin://script.extendedinfo/?info=youtubevideo&&id=%s")' % ytID)
 	
