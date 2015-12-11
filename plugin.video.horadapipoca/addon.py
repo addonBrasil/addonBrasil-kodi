@@ -70,6 +70,7 @@ def getFilmes(url):
 		for filme in filmes:
 				titF = filme.img["alt"].encode('utf-8', 'ignore')
 				titF = titF.replace('Assistir ','').replace('Filme ','')
+				print titF
 				urlF = filme.a["href"].encode('utf-8', 'ignore')
 				imgF = filme.img["src"].encode('utf-8', 'ignore')
 				
@@ -92,7 +93,7 @@ def doPesquisa():
 				pesquisa = urllib.quote(texto)
 				url      = base + '?s=%s' % str(pesquisa)
 				
-				getResPesquisa(url)
+				getFilmes(url)
 				
 def getResPesquisa(url) :
 		link  = openURL(url)
