@@ -1,0 +1,22 @@
+<?xml version="0.0.1" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.horadapipoca" name="Hora Da Pipoca" version="1.0.0" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+		<import addon="script.module.urlresolver" version="1.0.0"/>
+		<import addon="script.extendedinfo" version="3.0.0"/>
+  </requires>
+	
+  <extension point="xbmc.python.pluginsource" library="addon.py">
+    <provides>video</provides>
+  </extension>
+	
+  <extension point="xbmc.addon.metadata">
+    <language>en</language>
+    <platform>all</platform>
+    <summary lang="en">Hora Da Pipoca</summary>
+    <description lang="en">
+			No addon Hora Da Pipoca você assiste filmes separados por categorias, lançamentos,filmes HD, etc. 
+			Você também pode ver as informações ou assistir ao trailer do filme no submenu do addon (Botão esquerdo do mouse ou tecla "C").
+		</description>
+  </extension>
+</addon>

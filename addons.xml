@@ -155,6 +155,28 @@
     </extension>
 </addon>
 
+<addon id="plugin.video.horadapipoca" name="Hora Da Pipoca" version="1.0.0" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+		<import addon="script.module.urlresolver" version="1.0.0"/>
+		<import addon="script.extendedinfo" version="3.0.0"/>
+  </requires>
+
+  <extension point="xbmc.python.pluginsource" library="addon.py">
+    <provides>video</provides>
+  </extension>
+
+  <extension point="xbmc.addon.metadata">
+    <language>en</language>
+    <platform>all</platform>
+    <summary lang="en">Hora Da Pipoca</summary>
+    <description lang="en">
+			No addon Hora Da Pipoca vocÃª assiste filmes separados por categorias, lanÃ§amentos,filmes HD, etc.
+			VocÃª tambÃ©m pode ver as informaÃ§Ãµes ou assistir ao trailer do filme no submenu do addon (BotÃ£o esquerdo do mouse ou tecla "C").
+		</description>
+  </extension>
+</addon>
+
 <addon id="plugin.video.lusotv" name="Luso TV" version="1.1.2" provider-name="AddonBrasil">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
