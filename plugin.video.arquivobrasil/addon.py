@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Addon : Arquivo Brasil
 # By AddonBrasil - 28/07/2015
+# Atualizado (1.3.5) - 10/12/2015
 #####################################################################
 
 import urllib,urllib2,re,xbmcplugin, xbmcaddon, xbmcgui, time, base64
@@ -42,7 +43,7 @@ if (selfAddon.getSetting("uuid") == ""):
 	selfAddon.setSetting("uuid", tracker.params["cid"]);
 else:
 	tracker.set("clientId", selfAddon.getSetting("uuid"));
-
+	
 #####################################################################
 
 def menuPrincipal():
@@ -51,14 +52,13 @@ def menuPrincipal():
 		addDir('Jornalismo'   , base,  10, imgsrv + 'jornalismo.jpg')
 		addDir('Variedades'   , base,  10, imgsrv + 'variedades.jpg')
 		addDir('Esportes'     , base,  10, imgsrv + 'esportes.jpg')
-		addDir('Extras'       , base,  30, imgsrv + 'extras.jpg')
+		#addDir('Extras'       , base,  30, imgsrv + 'extras.jpg')
 		addDir('Configurações', base, 999, imgsrv + 'config.jpg', False)
 
 		setViewMenu()
 		
 def menuExtras():
 		addDir('Malhação 2015'    , basex + '?novos=1&e=malhacao-2015'                , 40, imgsrv + 'malhacao.png')
-		addDir('Mister Brau'      , basex + '?novos=1&e=mister-brau'                  , 40, imgsrv + 'mister-brau.png')
 		addDir('Hora 1 da Notícia', basex + '?novos=1&e=hora-1'                       , 40, imgsrv + 'hora-1.png')
 		addDir('Jornal Hoje'      , basex + '?novos=1&e=jornal-hoje'                  , 40, imgsrv + 'jornal-hoje.png')
 		addDir('Bem Estar'        , basex + '?novos=1&e=bem-estar'                    , 40, imgsrv + 'bem-estar.png')
@@ -184,11 +184,16 @@ def doPlay(url, name):
 				url2Play = getURL2Play(url2Rslv)
 				needPlaylist = False
 		except :
-				url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
-				linkRslv = openURL(url2Rslv)
-				url2Play = re.findall('<location>(.*?)</location>', linkRslv)
-				totu2p = len(url2Play)
-				needPlaylist = True
+				try : 
+						url2Rslv = re.findall('<iframe width="645" height="355" src="(.*?)"', link)[0]
+						url2Play = urlresolver.resolve(url2Rslv)
+						needPlaylist = False
+				except :
+						url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
+						linkRslv = openURL(url2Rslv)
+						url2Play = re.findall('<location>(.*?)</location>', linkRslv)
+						totu2p = len(url2Play)
+						needPlaylist = True
 		
 		msgDialog.update(75)
 
@@ -215,7 +220,7 @@ def doPlay(url, name):
 				else :
 						liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
 						liz.setInfo('video', {'Title': name})
-						liz.setPath(url)
+						liz.setPath(url2Play)
 						liz.setProperty('mimetype','video/mp4')
 						liz.setProperty('IsPlayable', 'true')
 						playlist.add(url2Play, liz)
@@ -254,10 +259,8 @@ def doPlayExt(url, name):
 
 				url2Play = getDmURL(urlDM)
 		else :
-				urlRSS = urlExt + '.rss'
-				
-				linkRSS = openURL(urlRSS)
-
+				urlRSS   = urlExt + '.rss'
+				linkRSS  = openURL(urlRSS)
 				url2Play = re.findall('<jwplayer:source file="(.*?)" />', linkRSS)		
 		
 		msgDialog.update(75)
@@ -280,12 +283,13 @@ def doPlayExt(url, name):
 									urls2Play = url2Play[i].replace('./','http://dnshost.cf/player1/' )
 									
 									liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
+									
 									liz.setInfo('video', {'Title': name})
-									liz.setPath(url)
+									liz.setPath(urls2Play)
 									liz.setProperty('mimetype','video/mp4')
 									liz.setProperty('IsPlayable', 'true')
 									
-									playlist.add(url=urls2Play, listitem=liz, index=7)
+									playlist.add(urls2Play, liz)
 									
 									i+=1
 						
