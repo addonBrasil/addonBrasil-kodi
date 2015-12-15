@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Addon : Hora Da Pipoca
 # By AddonBrasil - 11/12/2015
-# Atualizado (1.0.0) - 11/12/2015
+# Atualizado (1.0.1) - 15/12/2015
 #####################################################################
 
 import urllib, urllib2, re, xbmcplugin, xbmcgui, xbmc, xbmcaddon, os, time, base64
@@ -13,7 +13,6 @@ from resources.lib import control
 from resources.lib import client
 from resources.lib import jsunpack
 from resources.lib import captcha
-from resources.lib.UniversalAnalytics import Tracker
 
 addon_id = 'plugin.video.horadapipoca'
 selfAddon = xbmcaddon.Addon(id=addon_id)
@@ -22,17 +21,18 @@ addonfolder = selfAddon.getAddonInfo('path')
 artfolder   = addonfolder + '/resources/img/'
 fanart      = addonfolder + '/fanart.jpg'
 
-base   = base64.b64decode('aHR0cDovL2VmaWxtZXNuYXJlZGUuY29t')
+base = base64.b64decode('aHR0cDovL2VmaWxtZXNuYXJlZGUuY29t')
 
 ############################################################################################################
 
 def menuPrincipal():
-		addDir('Categorias'   , base                            ,  10, artfolder + 'categorias.png')
-		addDir('Lançamentos'  , base + '/category/lancamentos/' ,  20, artfolder + 'lancamentos.png')
-		addDir('Legendados'   , base + '/category/legendados/'  ,  20, artfolder + 'legendados.png')
-		addDir('HD 720p'      , base + '/category/blu-ray-720p/',  20, artfolder + 'hd720p.png')
-		addDir('Pesquisa'     , '--'                            ,  30, artfolder + 'pesquisa.png')
-		addDir('Configurações', base                            , 999, artfolder + 'config.png', 1, False)
+		addDir('Categorias'                , base                            ,   10, artfolder + 'categorias.png')
+		addDir('Lançamentos'               , base + '/category/lancamentos/' ,   20, artfolder + 'lancamentos.png')
+		addDir('Legendados'                , base + '/category/legendados/'  ,   20, artfolder + 'legendados.png')
+		addDir('HD 720p'                   , base + '/category/blu-ray-720p/',   20, artfolder + 'hd720p.png')
+		addDir('Pesquisa'                  , '--'                            ,   30, artfolder + 'pesquisa.png')
+		addDir('Configurações'             , base                            ,  999, artfolder + 'config.png', 1, False)
+		addDir('Configurações ExtendedInfo', base                            , 1000, artfolder + 'config.png', 1, False)
 			
 		setViewMenu()		
 		
@@ -59,10 +59,10 @@ def getCategorias(url):
 		
 def getFilmes(url):
 		link  = openURL(url)
-		soup  = BeautifulSoup(link)
+		link = unicode(link, 'utf-8', 'ignore')		
 		
+		soup     = BeautifulSoup(link)
 		conteudo = soup("div", {"class": "ib-miniaturas lista-miniaturas"})
-		
 		filmes   = conteudo[0]("div", {"class": "ib-miniatura"})
 		
 		totF = len(filmes)
@@ -94,25 +94,6 @@ def doPesquisa():
 				
 				getFilmes(url)
 				
-def getResPesquisa(url) :
-		link  = openURL(url)
-		soup  = BeautifulSoup(link)
-		
-		conteudo = soup("div", {"class": "resultado"})
-		resPesq  = conteudo[0]("div", {"class": "imagen"})
-		
-		totRP = len(resPesq)
-		
-		for res in resPesq:
-				titRP = res.img["alt"].encode('utf-8', 'ignore')
-				#titF = titF.replace('–','').replace('Assistir','').replace('Dublado','').replace('Online','').replace('Nacional ','')
-				#titF = titF.replace('1080p ','').replace('720p','').replace('HD','').replace('Legendado ','').replace('ou','').replace('/','')#.replace(' e ','')
-				#titF = titF.strip()
-				urlRP = res.a["href"]
-				imgRP = res.img["src"]
-				
-				addDirF(titRP, urlRP, 100, imgRP, False, totRP)
-				
 def player(name,url,iconimage):
 		mensagemprogresso = xbmcgui.DialogProgress()
 		mensagemprogresso.create('HORA DA PIPOCA', 'Obtendo Fontes para ' + name, 'Por favor aguarde...')
@@ -141,11 +122,12 @@ def player(name,url,iconimage):
 										if not 'FlashX' in titS :
 												if not 'Vídeo PW' in titS :
 														if not 'YouWatch' in titS :
-																if not 'Ok.ru' in titS :
-																		idS = servers1[i]["data-pid"]
+																if not 'Youwatch' in titS :
+																		if not 'Ok.ru' in titS :
+																				idS = servers1[i]["data-pid"]
 
-																		titsT.append(titS)
-																		idsT.append(idS)
+																				titsT.append(titS)
+																				idsT.append(idS)
 												
 		try :
 				servers2 = conteudo[1]("li")
@@ -153,20 +135,20 @@ def player(name,url,iconimage):
 
 				for i in range(totS2) :
 						if i == 0 :
-								tipo = servers2[i].text
+								tipo = servers2[i].text.encode('utf-8','ignore')
 						else :
-								titS = servers2[i].text + " (%s)" % tipo
+								titS = servers2[i].text.encode('utf-8','ignore') + " (%s)" % tipo
 								
 								if not 'Principal' in titS :
 										if not 'DropVideo' in titS :
 												if not 'FlashX' in titS :
 														if not 'Vídeo PW' in titS :
 																if not 'YouWatch' in titS :
-																		if not 'Ok.ru' in titS :
-																				idS = servers2[i]["data-pid"]
-
-																				titsT.append(titS)
-																				idsT.append(idS)
+																		if not 'Youwatch' in titS :
+																				if not 'Ok.ru' in titS :
+																						idS = servers2[i]["data-pid"]
+																						titsT.append(titS)
+																						idsT.append(idS)
 		except :
 				pass
 		
@@ -182,7 +164,7 @@ def player(name,url,iconimage):
 		
 		links = conteudo[0]("iframe")
 		
-		if not links :
+		if len(links) == 0 :
 				links = conteudo[0]("embed")
 			
 		for link in links :
@@ -199,10 +181,6 @@ def player(name,url,iconimage):
 		elif 'video.tt' in urlVideo :
 				vttID = urlVideo.split('e/')[1]
 				urlVideo = 'http://www.video.tt/watch_video.php?v=%s' % vttID
-		elif 'youwatch' in urlVideo :
-				ywID = urlVideo.split('embed-')[1].replace('.html','')
-				print ywID
-				urlVideo = 'http://www.youwatch.org/embed-%s-640x360.html' % ywID
 		
 		matriz = urlresolver.resolve(urlVideo)
 		
@@ -229,7 +207,6 @@ def player(name,url,iconimage):
 		mensagemprogresso.update(100)
 		mensagemprogresso.close()
 		
-		
 		if legendas != '-':
 			if 'timedtext' in legendas:
 					import os.path
@@ -238,7 +215,6 @@ def player(name,url,iconimage):
 					sub_file_xml = open(sfile_xml,'w')
 					sub_file_xml.write(urllib2.urlopen(legendas).read())
 					sub_file_xml.close()
-					print "Sfile.srt : " + sfile_xml
 					xmltosrt.main(sfile_xml)
 					xbmcPlayer.setSubtitles(sfile)
 			else:
@@ -247,10 +223,15 @@ def player(name,url,iconimage):
 ############################################################################################################
 
 def openConfig():
-		#tracker.send("screenview", screenName="Config Screen")
-
 		selfAddon.openSettings()
 		setViewMenu()
+		xbmcplugin.endOfDirectory(int(sys.argv[1]))
+		
+def openConfigEI():
+		eiID  = 'script.extendedinfo'
+		eiAD  = xbmcaddon.Addon(id=eiID)
+
+		eiAD.openSettings()
 		xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def openURL(url):
@@ -337,10 +318,8 @@ def limpa(texto):
 		texto = texto.replace(' ','-')
 		texto = texto.lower()
 		
-		print texto
 		return texto
 		
-
 ############################################################################################################
               
 def get_params():
@@ -361,31 +340,20 @@ def get_params():
                                 
         return param
 
-      
-params=get_params()
-url=None
-name=None
-mode=None
-iconimage=None
+params    = get_params()
+url       = None
+name      = None
+mode      = None
+iconimage = None
 
-try:
-        url=urllib.unquote_plus(params["url"])
-except:
-        pass
-try:
-        name=urllib.unquote_plus(params["name"])
-except:
-        pass
-try:
-        mode=int(params["mode"])
-except:
-        pass
-
-try:        
-        iconimage=urllib.unquote_plus(params["iconimage"])
-except:
-        pass
-
+try    : url=urllib.unquote_plus(params["url"])
+except : pass
+try    : name=urllib.unquote_plus(params["name"])
+except : pass
+try    : mode=int(params["mode"])
+except : pass
+try    : iconimage=urllib.unquote_plus(params["iconimage"])
+except : pass
 
 #print "Mode: "+str(mode)
 #print "URL: "+str(url)
@@ -408,5 +376,6 @@ elif mode == 98   : getInfo(url)
 elif mode == 99   : playTrailer(name,url,iconimage)
 elif mode == 100  : player(name,url,iconimage)
 elif mode == 999  : openConfig()
+elif mode == 1000 : openConfigEI()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))	
