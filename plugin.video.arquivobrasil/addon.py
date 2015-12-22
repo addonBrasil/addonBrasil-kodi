@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Addon : Arquivo Brasil
 # By AddonBrasil - 28/07/2015
-# Atualizado (1.3.5) - 10/12/2015
+# Atualizado (1.3.6) - 22/12/2015
 #####################################################################
 
 import urllib,urllib2,re,xbmcplugin, xbmcaddon, xbmcgui, time, base64
@@ -23,6 +23,8 @@ fanart  = addonfolder + '/fanart.jpg'
 base   = base64.b64decode('aHR0cDovL25vdmVsYXNncmF2YWRhcy5uZXQv')
 basex  = base64.b64decode('aHR0cDovL3Rhbm9hci50di8=')
 imgsrv = base64.b64decode('aHR0cDovL2FycXVpdm9icmFzaWwuYWRkb25icmFzaWwudGsvaW1ncy8=')
+
+agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
 
 ga = {
 	"enabled"    : False,
@@ -187,6 +189,7 @@ def doPlay(url, name):
 				try : 
 						url2Rslv = re.findall('<iframe width="645" height="355" src="(.*?)"', link)[0]
 						url2Play = urlresolver.resolve(url2Rslv)
+						url2Play = url2Play + ' |User-agent:' + agent
 						needPlaylist = False
 				except :
 						url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
