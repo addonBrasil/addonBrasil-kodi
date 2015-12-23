@@ -1,17 +1,14 @@
 ##############################################################################
 # -*- coding: utf-8 -*-
-# By AddonBrasil - 02/10/2015
+# By AddonBrasil - 23/12/2015
 ##############################################################################
 
 import urllib, urllib2, re, xbmcplugin, xbmcgui, xbmc, xbmcaddon, os, time
-import json
+import urlresolver
 
-from resources.lib import control
-from resources.lib import client
-from resources.lib import jsunpack
-from resources.lib import captcha
 from resources.lib.BeautifulSoup import BeautifulSoup
 from resources.lib.UniversalAnalytics import Tracker
+from resources.lib import client
 
 addon_id    = 'plugin.video.cinecult'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
@@ -41,9 +38,9 @@ tracker.set("appVersion", ga["appVersion"]);
 tracker.set("appId", ga["appId"]);
 
 if (selfAddon.getSetting("uuid") == ""):
-	selfAddon.setSetting("uuid", tracker.params["cid"]);
+		selfAddon.setSetting("uuid", tracker.params["cid"]);
 else:
-	tracker.set("clientId", selfAddon.getSetting("uuid"));
+		tracker.set("clientId", selfAddon.getSetting("uuid"));
 
 ##############################################################################
 
@@ -165,17 +162,23 @@ def doPlay(url, name) :
 
 		if index == -1 : return
 
-		urlVideo = links[index]
+		urlV = links[index]
 		
-		if   'openload'  in urlVideo : url2Play = getOpenLoad(urlVideo)
-		elif 'vidzi.tv'  in urlVideo : url2Play = getVidzi(urlVideo)
+		if   'openload'  in urlV : url2Play = getOpenLoad(urlV)
+		elif 'vidzi.tv'  in urlV : url2Play = getVidzi(urlV)
 				
 		msgDialog.update(75, 'Abrindo Sinal', name, 'Por favor aguarde...')
 		
-		urlVideo   = url2Play[0]
+		urlVideo   = str(url2Play[0])
 		urlLegenda = url2Play[1]
 		
-		if not 'Captcha' in urlVideo :
+		if 'unresolvable' in urlVideo :
+				tracker.send("event", "Erro Captcha", "Captcha digitado com erro", "error", screenName="Play Screen");
+
+				msgDialog.update(100)
+				dialog = xbmcgui.Dialog()
+				dialog.ok("CINE CULT", "ERRO CAPTCHA", 'Desculpe, o captcha não foi digitado corretamente!', "Por favor tente novamente.")
+		else :
 				tracker.send("event", "Usage", "Play Video - " + name, "movie", screenName="Play Screen");
 		
 				playlist = xbmc.PlayList(1)
@@ -193,7 +196,7 @@ def doPlay(url, name) :
 				xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
 				xbmcPlayer.play(playlist)
 				
-				if urlLegenda != '-':
+				if urlLegenda != '----':
 						if 'timedtext' in urlLegenda :
 								import os.path
 								sfile = os.path.join(xbmc.translatePath("special://temp"),'sub.srt')
@@ -201,7 +204,6 @@ def doPlay(url, name) :
 								sub_file_xml = open(sfile_xml,'w')
 								sub_file_xml.write(urllib2.urlopen(urlLeg).read())
 								sub_file_xml.close()
-								print "Sfile.srt : " + sfile_xml
 								xmltosrt.main(sfile_xml)
 								xbmc.sleep(1000)
 								xbmcPlayer.setSubtitles(sfile)
@@ -215,48 +217,18 @@ def doPlay(url, name) :
 								xbmcPlayer.setSubtitles(urlLegenda)
 						except :
 								pass
-				
-		else:
-				tracker.send("event", "Erro", "Erro Captcha", "error", screenName="Play Screen");
 
-				msgDialog.update(100)
-				dialog = xbmcgui.Dialog()
-				dialog.ok("CINE CULT", "ERRO CAPTCHA", 'Desculpe, o captcha não foi digitado corretamente !', "Por favor tente novamente...")
-				
 def getOpenLoad(url):
-		link = client.request(url)
+		link = client.request(url, mobile=True)
 		
 		try :
-				leg = re.findall('<track kind="captions" src="(.*?)"', link)[0]
+				leg = client.parseDOM(link, 'track' , ret='src')[0]
 				urlLegenda = 'https://openload.co' + str(leg)
 		except :
-				urlLegenda = '-'
+				urlLegenda = '----'
 				
-		id = re.compile('//.+?/(?:embed|f)/([0-9a-zA-Z-_]+)').findall(url)[0]
-
-		url = 'https://api.openload.io/1/file/dlticket?file=%s' % id
-
-		result = client.request(url)
-		result = json.loads(result)
-		
-		cap = result['result']['captcha_url']
-
-		if  not cap == None : cap = captcha.keyboard(cap)
-		
-		time.sleep(result['result']['wait_time'])
-
-		url = 'https://api.openload.io/1/file/dl?file=%s&ticket=%s' % (id, result['result']['ticket'])
-
-		if not cap == None : url += '&captcha_response=%s' % urllib.quote(cap)
-
-		result = client.request(url)
-		result = json.loads(result)
-		
-		if 'Captcha not solved correctly' in result['msg'] :
-				urlVideo = result['msg']
-		else :
-				urlVideo = result['result']['url'] + '?mime=true'
-
+		urlVideo = urlresolver.resolve(url)
+				
 		return [urlVideo, urlLegenda]
 		
 def getVidzi(url):
@@ -455,7 +427,7 @@ except NameError:
 		else:
 				tracker.set("clientId", selfAddon.getSetting("uuid"));
 	
-tracker.send("event", "Usage", "install", screenName="Menu Principal")
+		tracker.send("event", "Usage", "install", screenName="Menu Principal")
 
 #print "Mode: "+str(mode)
 #print "URL: "+str(url)
