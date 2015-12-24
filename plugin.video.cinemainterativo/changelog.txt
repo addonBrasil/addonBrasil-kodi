@@ -1,10 +1,4 @@
-15/12/2015 v 1.0.1
-- Correcao na pesquisa de filmes
-- Correcao na aquisicao das legendas de alguns filmes
-- Correcao na aquisicao das informacoes dos filmes com caracteres acentuados
-- Adicionado a opcao para configuracao do ExtendedInfo diretamente no addon
-
-08/12/2015 v 1.0.0
+08/12/2015 versão 1.0.0
 - Versão inicial do addon by AddonBrasil
 
 
