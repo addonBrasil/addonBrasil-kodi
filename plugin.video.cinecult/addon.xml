@@ -1,8 +1,8 @@
-<addon id="plugin.video.cinecult" name="Cine Cult" version="1.0.3" provider-name="AddonBrasil">
+<addon id="plugin.video.cinecult" name="Cine Cult" version="1.0.4" provider-name="AddonBrasil">
 		<requires>
 				<import addon="xbmc.python" version="2.1.0"/>
-				<import addon="script.module.urlresolver" version="2.10.8"/>
-        <import addon="script.extendedinfo" version="3.0.0"/>
+				<import addon="script.module.urlresolver" version="2.10.0"/>
+        <import addon="script.extendedinfo" version="3.1.0"/>
 		</requires>
 	
 		<extension library="addon.py" point="xbmc.python.pluginsource">   

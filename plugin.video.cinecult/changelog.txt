@@ -1,3 +1,6 @@
+[B]29/12/2015 - Versao 1.0.4[/B]
+- Mínimas correcoes internas
+
 [B]23/12/2015 - Versao 1.0.3[/B]
 - Correcao do erro do captcha
 - Adicionada a resolução dos servidores com URLResolver

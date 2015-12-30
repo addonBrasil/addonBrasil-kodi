@@ -1,6 +1,7 @@
 ##############################################################################
 # -*- coding: utf-8 -*-
 # By AddonBrasil - 23/12/2015
+# Atualização 1.0.4 : 29/12/2015
 ##############################################################################
 
 import urllib, urllib2, re, xbmcplugin, xbmcgui, xbmc, xbmcaddon, os, time
@@ -41,6 +42,8 @@ if (selfAddon.getSetting("uuid") == ""):
 		selfAddon.setSetting("uuid", tracker.params["cid"]);
 else:
 		tracker.set("clientId", selfAddon.getSetting("uuid"));
+		
+agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
 
 ##############################################################################
 
@@ -169,7 +172,7 @@ def doPlay(url, name) :
 				
 		msgDialog.update(75, 'Abrindo Sinal', name, 'Por favor aguarde...')
 		
-		urlVideo   = str(url2Play[0])
+		urlVideo   = str(url2Play[0]) #+ ' |User-agent:' + agent
 		urlLegenda = url2Play[1]
 		
 		if 'unresolvable' in urlVideo :
