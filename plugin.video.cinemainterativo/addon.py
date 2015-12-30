@@ -17,8 +17,7 @@ addonfolder = selfAddon.getAddonInfo('path')
 artfolder   = addonfolder + '/resources/img/'
 icon        = addonfolder + '/icon.png'
 fanart      = addonfolder + '/fanart.jpg'
-
-base = 'http://www.cinemainterativo.com'
+base        = 'http://www.cinemainterativo.com'
 
 ############################################################################################################
 
@@ -112,7 +111,7 @@ def doPesquisa():
 def player(name,url,iconimage):
 		mensagemprogresso = xbmcgui.DialogProgress()
 		
-		mensagemprogresso.create('CINEMA INTERATIVO', 'Obtendo Fonte Para ' + name, 'Por favor aguarde...')
+		mensagemprogresso.create('CINEMA INTERATIVO', 'Obtendo fonte para ' + name, 'Por favor aguarde...')
 		mensagemprogresso.update(0)
 		
 		link = openURL(url)
@@ -120,14 +119,14 @@ def player(name,url,iconimage):
 		vmID  = re.findall('".*?hashkey=(.*?)"', link)[0]
 		urlVM = 'http://videomega.tv/view.php?ref=%s' % vmID
 		
-		mensagemprogresso.update(25,'Resolvendo Link Para ' + name, 'Por favor aguarde...')
+		mensagemprogresso.update(25,'Resolvendo fonte para ' + name, 'Por favor aguarde...')
 
 		urlVideo = urlresolver.resolve(urlVM)
 		
-		mensagemprogresso.update(50,'Obtendo Legendas Para ' + name, 'Por favor aguarde...')
+		mensagemprogresso.update(50,'Obtendo legendas para ' + name, 'Por favor aguarde...')
 		legendas = getLegenda(urlVM+'&val=1')
 		
-		mensagemprogresso.update(75,'Abrindo Sinal Para ' + name, 'Por favor aguarde...')
+		mensagemprogresso.update(75,'Abrindo sinal para ' + name, 'Por favor aguarde...')
 		
 		playlist = xbmc.PlayList(1)
 		playlist.clear()
@@ -155,7 +154,8 @@ def getLegenda(url):
 				url = 'http://videomega.tv/cdn.php?ref=%s' % url
 
 				result = client.request(url, mobile=True)
-				sub = client.parseDOM(result, 'track' , ret='src', attrs = {'label': 'Default'})[0]
+				
+				sub = client.parseDOM(result, 'track' , ret='src')[0]
 				
 				return sub 
 		except:
