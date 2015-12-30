@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 #
 # By AddonBrasil 08/12/2015
+# Atualização 1.0.3: 29/12/2015
 ############################################################################################################
 
 import urllib, urllib2, re, xbmcplugin, xbmcgui, xbmc, xbmcaddon, os, time
@@ -70,7 +71,7 @@ def getFilmes(url):
 				addDirF(titF, urlF, 100, imgF, False, totF)
 				
 		try : 
-				proxima = re.findall('<link rel="next" href="(.*?)" />', link)[0]
+				proxima = re.findall('rel="next" href="(.*?)"', link)[0]
 				addDir('Próxima Página >>', proxima, 20, artfolder + 'proxima.png')
 		except : 
 				pass
@@ -225,8 +226,6 @@ def getInfo(url)	:
 				
 		nomeF = nomeF.encode('utf-8', 'ignore').replace('&#8217;',"'").replace('&#038;','&')
 		
-		#print nomeF
-				
 		xbmc.executebuiltin('XBMC.RunScript(script.extendedinfo,info=extendedinfo,name=%s)' % nomeF)
 
 def playTrailer(url):
