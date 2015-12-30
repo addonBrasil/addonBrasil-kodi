@@ -77,11 +77,11 @@
 		</extension>
 </addon>
 
-<addon id="plugin.video.cinemainterativo" name="Cinema Interativo" version="1.0.0" provider-name="AddonBrasil">
+<addon id="plugin.video.cinemainterativo" name="Cinema Interativo" version="1.0.3" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
-		<import addon="script.module.urlresolver" version="1.0.0"/>
-		<import addon="script.extendedinfo" version="3.0.0"/>
+		<import addon="script.module.urlresolver" version="2.10.0"/>
+		<import addon="script.extendedinfo" version="3.1.0"/>
   </requires>
 
   <extension point="xbmc.python.pluginsource" library="addon.py">
@@ -89,12 +89,12 @@
   </extension>
 
   <extension point="xbmc.addon.metadata">
-    <summary lang="pt_BR">Cinema Interativo</summary>
-    <description lang="pt_BR">
+    <summary lang="en">Cinema Interativo</summary>
+    <description lang="en">
 			No addon Cinema Interativo vocÃª assiste filmes legendados e dublados com quaidade HD, separados por categorias e anos, tudo com um so clique
 			e ainda pode ver as informaÃ§Ãµes ou assistir ao trailer do filme no submenu do addon (BotÃ£o esquerdo do mouse ou tecla "C").
 		</description>
-		<language>pt_BR</language>
+		<language>en</language>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
 		<website>http://www.cinemainterativo.com/</website>
