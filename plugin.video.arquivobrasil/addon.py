@@ -1,8 +1,9 @@
 #####################################################################
 # -*- coding: utf-8 -*-
 # Addon : Arquivo Brasil
-# By AddonBrasil - 28/07/2015
+# By AddonBrasil     - 28/07/2015
 # Atualizado (1.3.6) - 22/12/2015
+# Atualizado (1.3.7) - 14/01/2016
 #####################################################################
 
 import urllib,urllib2,re,xbmcplugin, xbmcaddon, xbmcgui, time, base64
@@ -42,9 +43,9 @@ tracker.set("appId", ga["appId"]);
 ga["enabled"] = True;
 
 if (selfAddon.getSetting("uuid") == ""):
-	selfAddon.setSetting("uuid", tracker.params["cid"]);
+		selfAddon.setSetting("uuid", tracker.params["cid"]);
 else:
-	tracker.set("clientId", selfAddon.getSetting("uuid"));
+		tracker.set("clientId", selfAddon.getSetting("uuid"));
 	
 #####################################################################
 
@@ -180,6 +181,8 @@ def doPlay(url, name):
 
 		msgDialog.update(50)
 		
+		OK = True
+		
 		try :
 				url2Rslv = re.findall('<IFRAME SRC="(.*?)" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=645 HEIGHT=355></IFRAME>', link)[0]
 				url2Rslv = url2Rslv.replace('embed-','')
@@ -192,51 +195,58 @@ def doPlay(url, name):
 						url2Play = url2Play + ' |User-agent:' + agent
 						needPlaylist = False
 				except :
-						url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
-						linkRslv = openURL(url2Rslv)
-						url2Play = re.findall('<location>(.*?)</location>', linkRslv)
-						totu2p = len(url2Play)
-						needPlaylist = True
-		
-		msgDialog.update(75)
-
-		playlist = xbmc.PlayList(1)
-		playlist.clear()
-		
-		if url2Play :
-				if needPlaylist:
-						for i in range(0,totu2p) :
-								urlFinal = url2Play[i]
+						try :
+								url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
+								linkRslv = openURL(url2Rslv)
+								url2Play = re.findall('<location>(.*?)</location>', linkRslv)
+								totu2p = len(url2Play)
+								needPlaylist = True
+						except :
+								msgDialog.update(100)
+								dialog = xbmcgui.Dialog()
+								dialog.ok("ARQUIVO BRASIL", "Servidor não Suportado", "Este vídeo não pode ser executado devido ao servidor não ser suportado...", "Pedimos desculpas pelo transtorno.")		
+								OK = False
 								
-								if 'youtube' in urlFinal :
-										ytID = urlFinal.partition('v=')
-										ytID = ytID[2]
-										
-										urlFinal = 'plugin://plugin.video.youtube/play/?video_id=' + str(ytID)
+		if OK :
+				msgDialog.update(75)
 
+				playlist = xbmc.PlayList(1)
+				playlist.clear()
+				
+				if url2Play :
+						if needPlaylist:
+								for i in range(0,totu2p) :
+										urlFinal = url2Play[i]
+										
+										if 'youtube' in urlFinal :
+												ytID = urlFinal.partition('v=')
+												ytID = ytID[2]
+												
+												urlFinal = 'plugin://plugin.video.youtube/play/?video_id=' + str(ytID)
+
+										liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
+										liz.setInfo('video', {'Title': name})
+										liz.setPath(urlFinal)
+										liz.setProperty('mimetype','video/mp4')
+										liz.setProperty('IsPlayable', 'true')
+										playlist.add(urlFinal, liz)
+						else :
 								liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
 								liz.setInfo('video', {'Title': name})
-								liz.setPath(urlFinal)
+								liz.setPath(url2Play)
 								liz.setProperty('mimetype','video/mp4')
 								liz.setProperty('IsPlayable', 'true')
-								playlist.add(urlFinal, liz)
-				else :
-						liz = xbmcgui.ListItem(name, thumbnailImage=iconimage)
-						liz.setInfo('video', {'Title': name})
-						liz.setPath(url2Play)
-						liz.setProperty('mimetype','video/mp4')
-						liz.setProperty('IsPlayable', 'true')
-						playlist.add(url2Play, liz)
-								
-				msgDialog.update(100)
-				
-				tracker.send("event", "Usage", "Play Video - " + name, "video", screenName="Play Screen");
-				
-				xbmc.Player().play(playlist,liz)
-		else:
-				msgDialog.update(100)
-				dialog = xbmcgui.Dialog()
-				dialog.ok("ARQUIVO BRASIL", "Vídeo Indisponível", "Este vídeo ainda não esta disponível...", "Tente novamente em breve.")		
+								playlist.add(url2Play, liz)
+										
+						msgDialog.update(100)
+						
+						tracker.send("event", "Usage", "Play Video - " + name, "video", screenName="Play Screen");
+						
+						xbmc.Player().play(playlist,liz)
+				else:
+						msgDialog.update(100)
+						dialog = xbmcgui.Dialog()
+						dialog.ok("ARQUIVO BRASIL", "Vídeo Indisponível", "Este vídeo ainda não esta disponível...", "Tente novamente em breve.")		
 				
 def doPlayExt(url, name):
 		link = openURL(url)
@@ -312,10 +322,15 @@ def getURL2Play(url):
 
         try:
             post = {}
+						
             f = client.parseDOM(result, 'Form', attrs = {'method': 'POST'})[0]
             f = f.replace('"submit"', '"hidden"')
+						
             k = client.parseDOM(f, 'input', ret='name', attrs = {'type': 'hidden'})
-            for i in k: post.update({i: client.parseDOM(f, 'input', ret='value', attrs = {'name': i})[0]})
+						
+            for i in k: 
+								post.update({i: client.parseDOM(f, 'input', ret='value', attrs = {'name': i})[0]})
+								
             post = urllib.urlencode(post)
         except:
             post = None
