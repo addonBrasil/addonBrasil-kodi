@@ -1,10 +1,16 @@
-15/12/2015 v 1.0.1
-- Correção para grafia correta dos nomes dos filmes sem caracteres estranhos
-- Correção para exibir opcao de fontes legendadas para alguns filmes
-- Correção na pesquisa de filmes
+[B]12/03/2016 v 1.1.0[/B]
+- Correcao para o desaparecimento do addon no repositorio
+- Correcao na aquisicao de algumas fontes
+- Adicionada resolucao para as fontes FLASHX e THEVID (100% funcional)
+
+
+[B]15/12/2015 v 1.0.1[/B]
+- Correcao para grafia correta dos nomes dos filmes sem caracteres estranhos
+- Correcao para exibir opcao de fontes legendadas para alguns filmes
+- Correcao na pesquisa de filmes
 - Adicionado a opcao para configuracao do ExtendedInfo diretamente no addon
 
-11/12/2015 v 1.0.0
-- Versão inicial do Addon by AddonBrasil
+[B]11/12/2015 v 1.0.0[/B]
+- Versao inicial do Addon by AddonBrasil
 
 
