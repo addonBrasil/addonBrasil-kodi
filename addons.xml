@@ -267,13 +267,13 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.seriesonlinehd" name="SÃ©ries Online HD" version="1.0.1" provider-name="AddonBrasil">
+<addon id="plugin.video.seriesonlinehd" name="SÃ©ries Online HD" version="1.0.2" provider-name="AddonBrasil">
   <requires>
 			<import addon="xbmc.python" version="2.1.0"/>
-			<import addon="script.module.urlresolver"  optional="true"/>
-			<import addon="script.common.plugin.cache" optional="true"/>
-			<import addon="script.module.simplejson" optional="true"/>
-			<import addon="script.module.parsedom" optional="true"/>
+			<import addon="script.module.urlresolver"   version="2.10.0"/>
+			<import addon="script.common.plugin.cache" version="1.0.0" />
+			<import addon="script.module.simplejson" version="1.0.0"/>
+			<import addon="script.module.parsedom" version="1.0.0"/>
   </requires>
 
   <extension point="xbmc.python.pluginsource" library="default.py">

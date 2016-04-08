@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # By AddonBrasil - 26/08/15
+# Atualização 1.0.1: 29/12/2015
+# Atualização 1.0.2: 08/04/2016
 #############################################################################################
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmc,xbmcaddon,HTMLParser,os
@@ -28,6 +30,7 @@ def menuPrincipal():
 		addDir2('Categorias'  , base, 20, artfolder + 'categorias.jpg',fanart)
 		addDir2('Pesquisa'    , base, 50, artfolder + 'pesquisa.jpg',fanart)  
 		
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 		xbmc.executebuiltin('Container.SetViewMode(50)')
 
 def getSeries(url):
@@ -48,18 +51,14 @@ def getSeries(url):
 				
 				addDir(tit, url, 11, str(img), totSeries, True)
 
-		try :
-				proxpag = BeautifulSoup(soup.find('div', { "class" : "wp-pagenavi" }).prettify())("a", { "class" : "previouspostslink" })[0]["href"]
-				if 'miss' in proxpag :
-						print "sim tem"
-						temp = proxpag.partition('?')
-						print temp
-						proxpag = temp[0]
-				print proxpag
-				addDir2("Próxima Página >>", proxpag, 10, artfolder + "proxima.jpg",fanart)
-		except:
+		try : 
+				proxima = re.findall('<link rel="next" href="(.*?)"', link)[0]
+				addDir2('Próxima Página >>', proxima, 10, artfolder + 'proxima.jpg', fanart)
+		except : 
 				pass
 				
+				
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 		xbmc.executebuiltin('Container.SetViewMode(500)')
 
 def getTemporadas(name, url, iconimage):
@@ -80,7 +79,8 @@ def getTemporadas(name, url, iconimage):
 						tempant = titTemporada
 						addDir2(titTemporada, urlTemporada, 12, iconimage, fanart)
 
-		xbmc.executebuiltin('Container.SetViewMode(50)')
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+		xbmc.executebuiltin('Container.SetViewMode(500)')
 
 def getEpisodios(name, url, iconimage):
 		link = openURL(url)
@@ -112,21 +112,21 @@ def getEpisodios(name, url, iconimage):
 						try    : legE = legEP[e].a['href']
 						except : legE = ''
 						
-						if 'Episódio' in epsE :
-								titEpisodioT =  seaE + ' - ' + epsE 
-						else : 
-								titEpisodioT =  seaE + ' - Episódio ' + epsE 
+						if 'Episódio' in epsE : titEpisodioT =  seaE + ' - ' + epsE 
+						else                  : titEpisodioT =  seaE + ' - Episódio ' + epsE 
 						
 						if dubE != '' : 
 								titEpisodio = titEpisodioT + ' - Dublado' #+ ' - ' + resE
 								addDir2(titEpisodio, dubE, 100, iconimage, fanart, False)
-						if legE != '' : 
+								
+						if legE != '' :
 								titEpisodio = titEpisodioT + ' - Legendado' #+ ' - ' + resE
 								addDir2(titEpisodio, legE, 100, iconimage, fanart,False)
 						
 				e += 1
 				
-		xbmc.executebuiltin('Container.SetViewMode(500)')
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+		xbmc.executebuiltin('Container.SetViewMode(50)')
 				
 def getCategorias(url):                  
 		link = openURL(url)
@@ -142,6 +142,7 @@ def getCategorias(url):
 				urlCat = categoria.a['href']
 				addDir(titCat, urlCat, 10, icon, totCategorias, True)
 						
+		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 		xbmc.executebuiltin('Container.SetViewMode(500)')
 
 def doPesquisa():
@@ -160,73 +161,62 @@ def doPesquisa():
 						return				
 				
 def playVideo(name, url, iconimage):
-		cloudzilla = r'href=".*?cz.php\?cz=(.*?)"'
-		#dropvideo  = r'href=".*?dv.php\?dv=(.*?)-800x400.html"'
-		#dropvidhd  = r'href=".*?dvhd.php\?dvhd=(.*?)-800x400.html"'
-		ok         = r'href="(.*?ok2.php\?key=.*?)"'
-		videopw    = r'href=".*?vpw.php\?vpw=(.*?)"'
-		vidtome    = r'href=".*?vt.php\?vt=(.*?)-800x400.html"'
+		OK = True		
 		
 		mensagemprogresso = xbmcgui.DialogProgress()
 		mensagemprogresso.create('Séries Online HD', 'Resolvendo Link','Por favor aguarde...')
 		mensagemprogresso.update(33)
 
-		links = []
-		hosts = []
-		matriz = []
+		linksE = []
+		hostsE = []
 
 		link = openURL(url)
+		soup  = BeautifulSoup(link)
+		conteudo = soup("div", {"class": "bts"})
+		links   = conteudo[0]("a")
 		
-		try:
-				links.append('http://www.cloudzilla.to/embed/'+re.findall(cloudzilla, link)[0])
-				hosts.append('CLOUDZILLA')
-		except:
-				pass
-
-		try:
-				links.append(re.findall(ok, link)[0])
-				hosts.append('OK')
-		except:
-				pass
+		for link in links:
+				titL = link.text
+				urlL = link["href"]
 				
-		try:
-				links.append('http://videopw.com/e/'+re.findall(videopw, link)[0])
-				hosts.append('VIDEOPW')
-		except:
-				pass
-
-		try:
-				links.append('http://www.vidto.me/'+re.findall(vidtome, link)[0])
-				hosts.append('VIDTO.ME')
-		except:
-				pass
-
-		if not hosts :	return
-
-		index = xbmcgui.Dialog().select('Selecione um dos hosts suportados :', hosts)
-
+				if not 'amv.php' in urlL :
+					if not 'cz.php' in urlL :
+						if not 'thevid' in urlL :
+							linksE.append(urlL)
+							hostsE.append(titL.upper())
+				
+		if not hostsE : return
+		
+		index = xbmcgui.Dialog().select('Selecione uma das fontes suportadas :', hostsE)
+		
 		if index == -1 : return
+		
+		mensagemprogresso.update(25,'Resolvendo fonte Para ' + name, 'Por favor aguarde...')
+		
+		urlV = linksE[index]
+		
+		if 'ok' in urlV : 
+				okID = urlV.split("key=")[1].replace('&leg=','')
+				urlV = 'http://ok.ru/videoembed/' + okID
+				
+		elif 'thevid' in urlV : 
+				tvID = urlV.split("thevid=")[1]
+				urlV = 'http://thevid.net/e/' + tvID
+				
+		elif 'vt.php' in urlV :
+				vtID = urlV.split("vt=")[1]
+				urlV = 'http://vidto.me/embed-' + vtID
 
-		url_video = links[index]
-		mensagemprogresso.update(66)
-
-		print 'Player url: %s' % url_video
-
-		if   'cloudzilla' in url_video : matriz = getVideoURL(url_video)	
-		elif 'ok'         in url_video : matriz = getOK(url_video)   
-		elif 'videopw'    in url_video : matriz = getVideoPW(url_video)   
-		elif 'vidto'      in url_video : matriz = getVideoURL(url_video)   
-		else                           : print "Falha: " + str(url_video)
-			
-		url = matriz[0]
-
-		if url=='-': return
-
-		legendas = matriz[1]
-
-		print "Url do gdrive: " + str(url_video)
-		print "Legendas: " + str(legendas)
-
+		elif 'vdz.php' in urlV :
+				vzID = urlV.split("vdz=")[1]
+				urlV = 'http://vidzi.tv/embed-' + vzID
+				
+		elif 'openload' in urlV :
+				olID = urlV.split("open=")[1]
+				urlV = 'https://openload.co/embed/' + olID
+				
+		if OK : urlVideo = urlresolver.HostedMediaFile(urlV).resolve()				
+				
 		mensagemprogresso.update(100)
 		mensagemprogresso.close()
 
@@ -235,103 +225,10 @@ def playVideo(name, url, iconimage):
 		listitem = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 		listitem.setInfo("Video", {"Title":name})
 		listitem.setProperty('mimetype', 'video/x-msvideo')
-		playlist.add(url,listitem)
+		playlist.add(urlVideo,listitem)
 		xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
 		xbmcPlayer.play(playlist)
 
-		if legendas != '-':
-				if 'timedtext' in legendas:
-						import os.path
-						sfile = os.path.join(xbmc.translatePath("special://temp"),'sub.srt')
-						sfile_xml = os.path.join(xbmc.translatePath("special://temp"),'sub.xml')#timedtext
-						sub_file_xml = open(sfile_xml,'w')
-						sub_file_xml.write(urllib2.urlopen(legendas).read())
-						sub_file_xml.close()
-						print "Sfile.srt : " + sfile_xml
-						xmltosrt.main(sfile_xml)
-						xbmcPlayer.setSubtitles(sfile)
-				else:
-						xbmcPlayer.setSubtitles(legendas)
-						
-#############################################################################################
-
-def getVideoURL(vURL) :
-		urlVideo = urlresolver.HostedMediaFile(url=vURL).resolve()
-		
-		if urlVideo : return [urlVideo, '-']
-		else        : return ['-', '-']
-		
-def getDropVideo(url):
-		link = openURL(url)
-		
-		try:
-				soup  = BeautifulSoup(link)
-				lista = soup.findAll('script')
-				js    = str(lista[9]).replace('<script>',"").replace('</script>',"")
-				
-				sUnpacked = jsunpack.unpack(js)
-				url_video = re.findall(r'var vurl2="(.*?)";', sUnpacked)
-				url_video = str(url_video).replace("['","").replace("']","")
-				return [url_video,"-"]
-		except:
-				pass	
-				
-def getOK(url) :
-		legVideo = '-'
-		urlVideo = '-'
-		
-		link = openURL(url)
-
-		urlx = re.compile("'file': '(.*?)'").findall(link)
-		qldx = re.compile("'label': '(.*?)'").findall(link)
-		
-		try :
-				legx = re.findall(r'file: "(/legendas/.*?)"', link)[0]
-				
-				if legx <> '' : legVideo = base + str(legx)
-				else          : legVideo = '-'
-		except :
-				pass
-				
-		urls = []
-		qlds = []
-		
-		toturls = len(urlx)
-		
-		i = 0
-		
-		for i in range(toturls) :
-				if urlx[i] == '' :
-					i += 1	
-				else :
-						urls.append(urlx[i])
-						qlds.append(qldx[i])
-						i += 1
-		
-		if not urls : return [urlVideo, legVideo]
-		
-		index = xbmcgui.Dialog().select('Selecione a resolução desejada :', qlds)
-
-		if index == -1 : return [urlVideo, legVideo]
-
-		urlVideo = urls[index]
-		
-		return [urlVideo, legVideo]
-		
-def getVideoPW(url) :
-		link = openURL(url)
-
-		try:
-			urlVideoPW = re.findall(r'vurl2 = "(.+?)";',link)[0]
-			urlLegVPW  = re.findall(r'vsubtitle = "(.+?)";',link)[0]
-			urlVideo    = urlVideoPW
-			urlLegendas = urlLegVPW
-		except:
-			urlVideo    = '-'
-			urlLegendas = '-'
-			
-		return [urlVideo, urlLegendas]			
-		
 #############################################################################################
 
 def openURL(url):
