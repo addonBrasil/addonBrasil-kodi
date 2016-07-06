@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.andersonguimaraes" name="Anderson Guimarães" version="2.0.1" provider-name="AddonBrasil">
+<addon id="plugin.video.andersonguimaraes" name="Anderson Guimarães" version="2.0.2" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="script.module.addon.common" version="2.0.0"/>
@@ -11,8 +11,8 @@
   </extension>
 	
   <extension point="xbmc.addon.metadata">
-    <summary lang="en">Anderson Guimarães</summary>
-    <description lang="en">Canal do Youtube Anderson Guimarães com dicas, truques e tutoriais para Kodi agora diretamente no Kodi</description>
+    <summary lang="en">Anderson Guimaraes</summary>
+    <description lang="en">Canal do Youtube Anderson Guimaraes com dicas, truques e tutoriais para Kodi agora diretamente no Kodi</description>
     <platform>all</platform>
     <forum></forum>
     <website></website>

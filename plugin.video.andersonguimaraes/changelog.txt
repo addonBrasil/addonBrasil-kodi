@@ -1,5 +1,8 @@
+Versão 2.0.2 - (05/07/2016)
+* Remocao da vinheta de entrada 
+
 Versão 2.0.1 - (11/07/2015)
-* Correção do bug da vinheta de entrada 
+* Correcao do bug da vinheta de entrada 
 
 Versão 2.0.0 - (09/07/2015)
 * Primeiro release do addon by AddonBrasil
