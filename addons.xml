@@ -156,7 +156,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.horadapipoca" name="Hora Da Pipoca" version="1.1.0" provider-name="AddonBrasil">
+<addon id="plugin.video.horadapipoca" name="Hora Da Pipoca" version="1.2.0" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
 		<import addon="script.module.urlresolver" version="2.10.8"/>
@@ -172,8 +172,8 @@
     <platform>all</platform>
     <summary lang="en">Hora Da Pipoca</summary>
     <description lang="en">
-			No addon Hora Da Pipoca voce assiste filmes separados por categorias, lanÃ§amentos,filmes HD, etc.
-			Voce tambÃ©m pode ver as informacoes ou assistir ao trailer do filme no submenu do addon (BotÃ£o direito do mouse ou tecla "C").
+			No addon Hora Da Pipoca vocÃª assiste filmes separados por categorias, lanÃ§amentos,filmes HD, etc.
+			VocÃªtambÃ©m pode ver as informaÃ§Ãµes ou assistir ao trailer do filme no submenu do addon (BotÃ£o direito do mouse ou tecla "C").
 			Atencao: Este addon necessita do script URLRESOLVER na versÃ£o 2.10.8 ou superior
 		</description>
   </extension>

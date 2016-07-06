@@ -11,12 +11,9 @@ import urllib, urllib2, re, xbmcplugin, xbmcgui, xbmc, xbmcaddon, os, time, base
 import urlresolver
 
 from resources.lib.BeautifulSoup import BeautifulSoup
-from resources.lib               import client
-from resources.lib               import control
 from resources.lib               import jsunpack
-from resources.lib               import captcha
 
-addon_id = 'plugin.video.horadapipoca'
+addon_id  = 'plugin.video.horadapipoca'
 selfAddon = xbmcaddon.Addon(id=addon_id)
 
 addonfolder = selfAddon.getAddonInfo('path')
@@ -48,7 +45,7 @@ def getCategorias(url):
 		totC = len(categorias)
 		
 		for categoria in categorias:
-				titC = categoria.text.encode('utf-8')
+				titC = categoria.text.encode('latin-1','replace')
 				
 				if not 'Lançamento' in titC :
 						urlC = categoria.a["href"]
@@ -108,48 +105,50 @@ def player(name,url,iconimage):
 		
 		link = openURL(url)
 		soup  = BeautifulSoup(link)
-		conteudo = soup("ul", {"class": "single-opts-pl"})
-		servers1  = conteudo[0]("li")
 		
-		totS1 = len(servers1)
+		try :
+				conteudo = soup("div", {"class": "pn-opcoes pn-dub"})
+				srvsdub  = conteudo[0]("li")
+		
+				totD = len(srvsdub)
 
-		for i in range(totS1) :
-				if i == 0 :
-						tipo = servers1[i].text.encode('utf-8','ignore')
-				else :
-						titS = servers1[i].text.encode('utf-8','ignore') + " (%s)" % tipo
+				tipo = "Dublado"
+
+				for i in range(totD) :
+						titS = srvsdub[i].text.encode('utf-8','ignore') + " (%s)" % tipo
 						
 						if not 'Principal' in titS :
-							if not 'Openload' in titS :
 								if not 'DropVideo' in titS :
 									if not 'Vídeo PW' in titS :
 										if not 'YouWatch' in titS :
 											if not 'Youwatch' in titS :
-												if not 'Ok.ru' in titS :
-														idS = servers1[i]["data-pid"]
-														titsT.append(titS)
-														idsT.append(idS)
-												
+													if not 'NeoDrive' in titS :
+															idS = srvsdub[i]["data-pid"]
+															titsT.append(titS)
+															idsT.append(idS)
+		except :
+				pass
+				
 		try :
-				servers2 = conteudo[1]("li")
-				totS2    = len(servers2)
+				conteudo = soup("div", {"class": "pn-opcoes pn-leg"})
+				srvsleg  = conteudo[0]("li")
 
-				for i in range(totS2) :
-						if i == 0 :
-								tipo = servers2[i].text.encode('utf-8','ignore')
-						else :
-								titS = servers2[i].text.encode('utf-8','ignore') + " (%s)" % tipo
-								
-								if not 'Principal' in titS :
-									if not 'Openload' in titS :
-										if not 'DropVideo' in titS :
-											if not 'Vídeo PW' in titS :
-												if not 'YouWatch' in titS :
-													if not 'Youwatch' in titS :
-														if not 'Ok.ru' in titS :
-																idS = servers2[i]["data-pid"]
-																titsT.append(titS)
-																idsT.append(idS)
+				totL = len(srvsleg)
+				
+				tipo = "Legendado"
+
+				for i in range(totL) :
+						titS = srvsleg[i].text.encode('utf-8','ignore') + " (%s)" % tipo
+						
+						if not 'Principal' in titS :
+								if not 'DropVideo' in titS :
+									if not 'Vídeo PW' in titS :
+										if not 'YouWatch' in titS :
+											if not 'Youwatch' in titS :
+													if not 'NeoDrive' in titS :
+															idS = srvsleg[i]["data-pid"]
+															titsT.append(titS)
+															idsT.append(idS)
 		except :
 				pass
 		
@@ -170,13 +169,11 @@ def player(name,url,iconimage):
 		for link in links :
 				urlVideo = link["data-src"]
 		
-		mensagemprogresso.update(50, 'Resolvendo fonte para ' + name,'Por favor aguarde...')
+		print "URLVIDEO " + urlVideo
 		
-		if 'neodrive.php' in urlVideo :
-				neoID = urlVideo.split('id=')[1]
-				urlVideo = 'http://neodrive.co/embed/%s/' % neoID
+		mensagemprogresso.update(50, 'Resolvendo fonte para ' + name,'Por favor aguarde...')
 				
-		elif 'nowvideo.php' in urlVideo :
+		if 'nowvideo.php' in urlVideo :
 				nowID = urlVideo.split("id=")[1]
 				urlVideo = 'http://embed.nowvideo.sx/embed.php?v=%s' % nowID
 				
@@ -196,7 +193,7 @@ def player(name,url,iconimage):
 				
 				OK = False
 				
-		if OK : url2Play = urlresolver.HostedMediaFile(urlVideo).resolve()
+		if OK : url2Play = urlresolver.resolve(urlVideo)
 
 		if not url2Play : return
 		
@@ -233,53 +230,7 @@ def player(name,url,iconimage):
 				xbmcPlayer.setSubtitles(legendas)
 				
 ############################################################################################################
-def getOpenLoad(url):
-		link = client.request(url)
 		
-		try :
-				leg = re.findall('<track kind="captions" src="(.*?)"', link)[0]
-				urlLegenda = 'https://openload.co' + str(leg)
-		except :
-				urlLegenda = '-'
-				
-		id = re.compile('//.+?/(?:embed|f)/([0-9a-zA-Z-_]+)').findall(url)[0]
-
-		url = 'https://api.openload.io/1/file/dlticket?file=%s' % id
-
-		result = client.request(url)
-		result = json.loads(result)
-		
-		cap = result['result']['captcha_url']
-
-		if  not cap == None : cap = captcha.keyboard(cap)
-		
-		time.sleep(result['result']['wait_time'])
-
-		url = 'https://api.openload.io/1/file/dl?file=%s&ticket=%s' % (id, result['result']['ticket'])
-
-		if not cap == None : url += '&captcha_response=%s' % urllib.quote(cap)
-
-		result = client.request(url)
-		result = json.loads(result)
-		
-		if 'Captcha not solved correctly' in result['msg'] :
-				urlVideo = result['msg']
-		else :
-				urlVideo = result['result']['url'] + '?mime=true'
-
-		return [urlVideo, urlLegenda]
-		
-
-def getNeoDrive(url):
-	link = openURL(url)
-	
-	try:
-		url_video = re.findall(r'vurl.=."(.*?)";',link)[0]
-		return url_video
-	except:
-		return "-"
-
-
 def openConfig():
 		selfAddon.openSettings()
 		setViewMenu()

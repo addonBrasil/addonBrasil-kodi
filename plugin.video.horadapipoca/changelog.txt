@@ -1,3 +1,7 @@
+[B]06/07/2016 v 1.2.0[/B]
+- Correcao do addon motivada pela mudanca do layout do site
+- Minimas correcoes no codigo fonte
+
 [B]12/03/2016 v 1.1.0[/B]
 - Correcao para o desaparecimento do addon no repositorio
 - Correcao na aquisicao de algumas fontes
