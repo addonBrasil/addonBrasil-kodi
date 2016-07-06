@@ -57,26 +57,6 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.cinecult" name="Cine Cult" version="1.0.4" provider-name="AddonBrasil">
-		<requires>
-				<import addon="xbmc.python" version="2.1.0"/>
-				<import addon="script.module.urlresolver" version="2.10.0"/>
-        <import addon="script.extendedinfo" version="3.1.0"/>
-		</requires>
-
-		<extension library="addon.py" point="xbmc.python.pluginsource">
-				<provides>video</provides>
-		</extension>
-
-		<extension point="xbmc.addon.metadata">
-				<language>en</language>
-				<platform>all</platform>
-				<summary lang="en">Cine Cult</summary>
-				<description lang="en">Assista aos melhores filmes cult, alternativos, classicos e raros, com legendas embutidas automaticamente.</description>
-				<platform>all</platform>
-		</extension>
-</addon>
-
 <addon id="plugin.video.cinemainterativo" name="Cinema Interativo" version="1.0.4" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
