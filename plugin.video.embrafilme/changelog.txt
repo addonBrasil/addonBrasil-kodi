@@ -1,0 +1,2 @@
+Versão 1.0.0 - (31/07/2016)
+* Primeiro release do addon by AddonBrasil

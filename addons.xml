@@ -118,6 +118,26 @@
     </extension>
 </addon>
 
+<addon id="plugin.video.embrafilme" name="Embrafilme" version="1.0.0" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.addon.common" version="2.0.0"/>
+    <import addon="plugin.video.youtube" version="5.0.0"/>
+  </requires>
+
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Embrafilme</summary>
+    <description lang="en">Canal do Youtube Embrafilme com filmes nacionais completos diretamente no Kodi</description>
+    <platform>all</platform>
+    <forum></forum>
+    <website></website>
+  </extension>
+</addon>
+
 <addon id="plugin.video.filmesondemand" name="Filmes On Demand" version="1.0.1" provider-name="AddonBrasil">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
