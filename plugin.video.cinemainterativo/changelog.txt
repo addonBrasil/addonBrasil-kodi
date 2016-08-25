@@ -1,3 +1,9 @@
+03/08/2016 v1.0.5
+- Inclusao da opcao LANCAEMNTOS no menu principal
+- Modificacao da classificacao dos anos em ordem inversa
+- Criacao de proteção contra instalação através de fonte não oficial
+- Otimizacao do codigo fonte
+
 30/12/2015 v1.0.4
 - Nova correcao na aquisicao das legendas de alguns filmes
 - Otimizacao do codigo fonte
