@@ -1,7 +1,7 @@
-03/08/2016 v1.0.5
-- Inclusao da opcao LANCAEMNTOS no menu principal
-- Modificacao da classificacao dos anos em ordem inversa
-- Criacao de proteção contra instalação através de fonte não oficial
+25/08/2016 v1.0.5
+- Nova correcao para resolucao dos filmes
+- Adicionada a opcao Lancamentos no menu principal
+- Alteracao da listagem de anos para ordem reversa 
 - Otimizacao do codigo fonte
 
 30/12/2015 v1.0.4

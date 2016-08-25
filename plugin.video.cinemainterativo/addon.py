@@ -1,10 +1,9 @@
 # -*- coding: UTF-8 -*-
 #
 # By AddonBrasil 08/12/2015
-# Atualização 1.0.3: 29/12/2015
 ############################################################################################################
 
-import urllib, urllib2, re, xbmcplugin, xbmcgui, xbmc, xbmcaddon, os, time
+import urllib, urllib2, re, xbmcplugin, xbmcgui, xbmc, xbmcaddon, xbmcvfs, os, time
 import urlresolver, urlparse
 
 from resources.lib.BeautifulSoup import BeautifulSoup
@@ -23,10 +22,11 @@ base        = 'http://www.cinemainterativo.com'
 
 def menuPrincipal():
 		addDir('Categorias'                , base                  ,  10, artfolder + 'categorias.png')
+		addDir('Lançamentos'               , base + '/ano/2016/'   ,  20, artfolder + 'new.png')
 		addDir('Últimos Filmes Adicionados', base                  ,  20, artfolder + 'ultimos.png')
 		addDir('Filmes Dublados'           , base + '/?s=dublado'  ,  20, artfolder + 'filmes.png')
 		addDir('Filmes Legendados'         , base + '/?s=legendado',  20, artfolder + 'filmes.png')
-		addDir('Filmes por Ano'            , base                  ,  30, artfolder + 'filmes.png')
+		addDir('Filmes por Ano'            , base                  ,  30, artfolder + 'calend.png')
 		addDir('Pesquisa de Filmes'        , '--'                  ,  40, artfolder + 'pesquisa.png')
 		addDir('Configurações'             , base                  , 999, artfolder + 'config.png', 1, False)
 			
@@ -44,7 +44,7 @@ def getCategorias(url):
 		for categoria in categorias:
 				titC = categoria.text.encode('utf-8', 'ignore')
 				
-				if not "Gênero" in titC :
+				if not ('Gênero' in titC or 'Adulto 18+' in titC) :
 						urlC = base + '/?cat=' + categoria["value"]
 						imgC = artfolder + 'categorias.png'
 						
@@ -63,11 +63,12 @@ def getFilmes(url):
 		
 		for filme in filmes:
 				titF = filme.h3.text.encode('utf-8', 'ignore')
-				titF = titF.replace('Dublado - 1080p','').replace('Dublado - 720p','').replace('Legendado - 1080p','').replace('Legendado - 720p','')
-				urlF = filme.a["href"]
-				imgF = filme.img["src"].encode('utf-8', 'ignore')
 				
-				addDirF(titF, urlF, 100, imgF, False, totF)
+				if not 'Novo Site' in titF :
+						urlF = filme.a["href"]
+						imgF = filme.img["src"].encode('utf-8', 'ignore')
+						
+						addDirF(titF, urlF, 100, imgF, False, totF)
 				
 		try : 
 				proxima = re.findall('rel="next" href="(.*?)"', link)[0]
@@ -86,14 +87,22 @@ def getAnos(url) :
 		
 		totA = len(anos)
 		
+		anosV = []
+		
 		for ano in anos:
 				titA = ano.text.encode('utf-8', 'ignore')
 				
 				if not "Ano" in titA :
-						urlA = base + '/?cat=' + ano["value"]
-						imgA = artfolder + 'categorias.png'
+						anosV.append(titA)
 						
-						addDir(titA, urlA, 20, imgA)
+						aSorted = sorted(anosV, reverse=True)
+						
+		for ano in aSorted :
+				titA = ano
+				urlA = base + '/ano/%s/' % ano
+				imgA = artfolder + 'calend.png'
+		
+				addDir(titA, urlA, 20, imgA)
 				
 		setViewMenu()		
 
@@ -117,13 +126,14 @@ def player(name,url,iconimage):
 		link = openURL(url)
 		
 		vmID  = re.findall('".*?hashkey=(.*?)"', link)[0]
-		urlVM = 'http://videomega.tv/view.php?ref=%s' % vmID
+		urlVM = 'http://videomega.tv/cdn.php?ref=%s' % vmID
 		
 		mensagemprogresso.update(25,'Resolvendo fonte para ' + name, 'Por favor aguarde...')
 
 		urlVideo = urlresolver.resolve(urlVM)
 		
 		mensagemprogresso.update(50,'Obtendo legendas para ' + name, 'Por favor aguarde...')
+		
 		legendas = getLegenda(urlVM+'&val=1')
 		
 		mensagemprogresso.update(75,'Abrindo sinal para ' + name, 'Por favor aguarde...')
@@ -164,8 +174,6 @@ def getLegenda(url):
 ############################################################################################################
 
 def openConfig():
-		#tracker.send("screenview", screenName="Config Screen")
-
 		selfAddon.openSettings()
 		setViewMenu()
 		xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -230,17 +238,24 @@ def getInfo(url)	:
 
 def playTrailer(url):
 		link = openURL(url)
+
+		ytURL = re.findall('<iframe width="500" height="281" src="(.*?)" frameborder="0" allowfullscreen></iframe>', link)[0]
 		
-		try :
-				ytURL = re.findall('<iframe width="500" height="281" src="(.*?)" frameborder="0" allowfullscreen></iframe>', link)[0]
-				ytURL = ytURL.replace('?feature=oembed','')
-				ytID = ytURL.split('embed/')
-				ytID = ytID[1]
-		except :
-				ytID = re.findall('<p>https://www.youtube.com/(.*?)</p>', link)[0]
-				ytID = ytID.split('=')[1]
+		urlTrailer = urlresolver.resolve(ytURL)
 		
-		xbmc.executebuiltin('XBMC.RunPlugin("plugin://script.extendedinfo/?info=youtubevideo&&id=%s")' % ytID)
+		playlist = xbmc.PlayList(1)
+		playlist.clear()
+		
+		listitem = xbmcgui.ListItem(name,thumbnailImage=iconimage)
+		
+		listitem.setPath(urlTrailer)
+		listitem.setProperty('mimetype','video/mp4')
+		listitem.setProperty('IsPlayable', 'true')
+		
+		playlist.add(urlTrailer,listitem)
+		
+		xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+		xbmcPlayer.play(playlist)
 	
 def setViewMenu() :
 		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
@@ -255,48 +270,6 @@ def setViewFilmes() :
 		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
 		opcao = selfAddon.getSetting('filmesVisu')
-
-		if   opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
-		elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
-		elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-		elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
-		elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(508)")
-		elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(504)")
-		elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(503)")
-		elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(515)")
-
-def setViewSeries() :
-		xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
-
-		opcao = selfAddon.getSetting('seriesVisu')
-
-		if   opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
-		elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
-		elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-		elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
-		elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(508)")
-		elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(504)")
-		elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(503)")
-		elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(515)")
-
-def setViewTemporadas() :
-		xbmcplugin.setContent(int(sys.argv[1]), 'seasons')
-
-		opcao = selfAddon.getSetting('temporadasVisu')
-
-		if   opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
-		elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
-		elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-		elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
-		elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(508)")
-		elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(504)")
-		elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(503)")
-		elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(515)")
-
-def setViewEpisodios() :
-		xbmcplugin.setContent(int(sys.argv[1]), 'seasons')
-
-		opcao = selfAddon.getSetting('temporadasVisu')
 
 		if   opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
 		elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
