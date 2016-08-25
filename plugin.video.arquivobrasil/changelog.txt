@@ -1,9 +1,13 @@
+[B]14/07/2016 - Versao 1.4.0[/B]
+- Atualizacao emergencial para combater a pirataria de nosso addon
+- Realizada troca do servidor de imagens do addon
+
 [B]14/07/2016 - Versao 1.3.8[/B]
 - Nova Correcao para resolucao de alguns servidores de novelas
 
 [B]14/01/2016 - Versao 1.3.7[/B]
 - Nova Correcao para resolucao dos servidores 
-= Perfumaria no código
+- Perfumaria no código
 
 [B]22/12/2015 - Versao 1.3.6[/B]
 - Nova Correcao para resolucao dos servidores 

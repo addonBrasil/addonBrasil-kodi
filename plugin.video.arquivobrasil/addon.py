@@ -5,9 +5,10 @@
 # Atualizado (1.3.6) - 22/12/2015
 # Atualizado (1.3.7) - 14/01/2016
 # Atualizado (1.3.8) - 14/07/2016
+# Atualizado (1.4.0) - 15/07/2016
 #####################################################################
 
-import urllib,urllib2,re,xbmcplugin, xbmcaddon, xbmcgui, time, base64
+import urllib,urllib2,re,xbmcplugin, xbmcaddon, xbmcgui, xbmc, time, base64
 import urlresolver
 
 from resources.lib import client
@@ -25,7 +26,7 @@ fanart  = addonfolder + '/fanart.jpg'
 base   = base64.b64decode('aHR0cDovL25vdmVsYXNncmF2YWRhcy5uZXQv')
 basex  = base64.b64decode('aHR0cDovL3Rhbm9hci50di8=')
 
-imgsrv = base64.b64decode('aHR0cDovL2FycXVpdm9icmFzaWwuYWRkb25icmFzaWwudGsvaW1ncy8=')
+imgsrv = 'http://arquivobrasil.addonbrasil.tk/images/'
 
 agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
 
@@ -184,43 +185,60 @@ def doPlay(url, name):
 		msgDialog.update(50)
 		
 		OK = True
-		
-		try :
-				url2Rslv = re.findall('<IFRAME SRC="(.*?)" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=645 HEIGHT=355></IFRAME>', link)[0]
-				url2Rslv = url2Rslv.replace('embed-','')
-				url2Play = getURL2Play(url2Rslv)
+        
+		#url2Rslv = re.findall('<iframe src="(.*?)" scrolling="no" frameborder="0"', link)[0]
+		#url2Play = urlresolver.resolve(url2Rslv)
+		#needPlaylist = False
+			
+		if not url2Play
+			try :
+					url2Rslv = re.findall('<IFRAME SRC="(.*?)" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=645 HEIGHT=355></IFRAME>', link)[0]
+					url2Rslv = url2Rslv.replace('embed-','')
+					url2Play = getURL2Play(url2Rslv)
+					needPlaylist = False
+			except :
+				pass
+			
+		if not url2Play :
+			try :
+				url2Rslv = re.findall('<iframe width="645" height="355" scrolling="no" frameborder="0" src="(.*?)" allowFullScreen></iframe></p>', link)[0]
+				url2Play = urlresolver.resolve(url2Rslv)
+				url2Play = url2Play + ' |User-agent:' + agent
 				needPlaylist = False
-		except :
-				try :
-						url2Rslv = re.findall('<iframe width="645" height="355" scrolling="no" frameborder="0" src="(.*?)" allowFullScreen></iframe></p>', link)[0]
-						url2Play = urlresolver.resolve(url2Rslv)
-						url2Play = url2Play + ' |User-agent:' + agent
-						needPlaylist = False
-				except :
-						try : 
-								url2Rslv = re.findall('<iframe width="645" height="355" src="(.*?)"', link)[0]
-								url2Play = urlresolver.resolve(url2Rslv)
-								url2Play = url2Play + ' |User-agent:' + agent
-								needPlaylist = False
-						except :
-								try :
-										url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
-										linkRslv = openURL(url2Rslv)
-										url2Play = re.findall('<location>(.*?)</location>', linkRslv)
-										totu2p = len(url2Play)
-										needPlaylist = True
-								except :
-										try :
-												url2Rslv = re.findall('<iframe src="(.*?)" scrolling="no" frameborder="0" width="100%" height="355" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>', link)[0]
-												url2Play = urlresolver.resolve(url2Rslv)
-												url2Play = url2Play + ' |User-agent:' + agent
-												needPlaylist = False
-										except :
-												msgDialog.update(100)
-												dialog = xbmcgui.Dialog()
-												dialog.ok("ARQUIVO BRASIL", "Servidor não Suportado", "Este vídeo não pode ser executado devido ao servidor não ser suportado...", "Pedimos desculpas pelo transtorno.")		
-												OK = False
-										
+			except :
+				pass
+				
+		if not url2Play :
+			try : 
+				url2Rslv = re.findall('<iframe width="645" height="355" src="(.*?)"', link)[0]
+				url2Play = urlresolver.resolve(url2Rslv)
+				url2Play = url2Play + ' |User-agent:' + agent
+				needPlaylist = False
+			except :
+				pass
+				
+		if not url2Play :
+			try :
+				url2Rslv = re.findall('flashvars="&#038;file=(.*?)&#038;skin', link)[0]
+				linkRslv = openURL(url2Rslv)
+				url2Play = re.findall('<location>(.*?)</location>', linkRslv)
+				totu2p = len(url2Play)
+				needPlaylist = True
+			except :
+				pass
+				
+		if not url2Play :
+			try :
+					url2Rslv = re.findall('<iframe src="(.*?)" scrolling="no" frameborder="0"', link)[0]
+					url2Play = urlresolver.resolve(url2Rslv)
+					url2Play = url2Play + ' |User-agent:' + agent
+					needPlaylist = False
+			except :
+					msgDialog.update(100)
+					dialog = xbmcgui.Dialog()
+					dialog.ok("ARQUIVO BRASIL", "Servidor não Suportado", "Este vídeo não pode ser executado devido ao servidor não ser suportado...", "Pedimos desculpas pelo transtorno.")		
+					OK = False	
+						
 		if OK :
 				msgDialog.update(75)
 

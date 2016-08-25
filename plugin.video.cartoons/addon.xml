@@ -11,7 +11,7 @@
   <extension point="xbmc.addon.metadata">
     <language>en</language>
     <platform>all</platform>
-    <summary lang="en">Cartoons Nobos & Antigos</summary>
+    <summary lang="en">Cartoons Novos & Antigos</summary>
     <description lang="en">No Cartoons voce assiste desenhos animados novos e antigos</description>
     <platform>all</platform>
   </extension>
