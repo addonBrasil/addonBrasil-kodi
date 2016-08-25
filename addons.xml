@@ -69,7 +69,7 @@
   <extension point="xbmc.addon.metadata">
     <language>en</language>
     <platform>all</platform>
-    <summary lang="en">Cartoons Novos & Antigos</summary>
+    <summary lang="en">Cartoons Novos e Antigos</summary>
     <description lang="en">No Cartoons voce assiste desenhos animados novos e antigos</description>
     <platform>all</platform>
   </extension>
@@ -87,9 +87,10 @@
   </extension>
 
   <extension point="xbmc.addon.metadata">
-    <summary lang="en">Filmes Dublados & Legendados</summary>
+    <summary lang="en">Filmes Dublados e Legendados</summary>
     <description lang="en">
-			No addon Cinema Interativo voce assiste filmes legendados e dublados com quaidade HD, separados por categorias e anos, tudo com um so clique e ainda pode ver as informacoes ou assistir ao trailer do filme no submenu do addon (Botao direito do mouse ou tecla "C").
+			No addon Cinema Interativo voce assiste filmes legendados e dublados com quaidade HD, separados por categorias e anos, tudo com um so clique e
+ainda pode ver as informacoes ou assistir ao trailer do filme no submenu do addon (Botao direito do mouse ou tecla "C").
 		</description>
 		<language>en</language>
 		<platform>all</platform>
