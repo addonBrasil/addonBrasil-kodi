@@ -1,143 +1,150 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # By AddonBrasil - 24/08/15
-
 #########################################################################
 
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmc,xbmcaddon,HTMLParser,sys
+import urllib, urllib2, re, xbmcplugin, xbmcgui, xbmc, xbmcaddon, HTMLParser, sys
 
 from xbmcgui import ListItem
-from BeautifulSoup import BeautifulSoup
+from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup
+
 
 addon_id    = 'plugin.video.animebrasil'
 selfAddon   = xbmcaddon.Addon(id=addon_id)
 addonfolder = selfAddon.getAddonInfo('path')
 artfolder   = addonfolder + '/resources/img/'
 fanart      = addonfolder + '/fanart.jpg'
-base        = 'http://anitubebr.xpg.uol.com.br/'
+base        = 'http://anitube.info'
 
 def menuPrincipal():
-		addDir2('Categorias'    , base + 'categories'     , 10, artfolder + 'categorias.jpg')
-		addDir2('+ Recentes'    , base + 'videos/basic/mr', 20, artfolder + 'recentes.jpg')
-		addDir2('+ Visualizados', base + 'videos/basic/mv', 20, artfolder + 'visualizados.jpg')
-		addDir2('+ Comentados'  , base + 'videos/basic/md', 20, artfolder + 'comentados.jpg')
-		addDir2('+ Populares'   , base + 'videos/basic/tr', 20, artfolder + 'populares.jpg')
-		addDir2('Top Favoritos' , base + 'videos/basic/tf', 20, artfolder + 'favoritos.jpg')
-		addDir2('Em Destaque'   , base + 'videos/basic/rf', 20, artfolder + 'destaque.jpg')
-		addDir2('Pesquisa'      , base                    , 30, artfolder + 'pesquisa.jpg')
+		addDir2('Gêneros'    , base + '/genero'            , 10, artfolder + 'categorias.jpg')
+		addDir2('Lançamentos', base + '/animes-lancamentos', 20, artfolder + 'recentes.jpg')
+		addDir2('Legendados' , base + '/anime'             , 30, artfolder + 'comentados.jpg')
+		addDir2('Pesquisa'   , base                        , 99, artfolder + 'pesquisa.jpg')
 		
-		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-		xbmc.executebuiltin('Container.SetViewMode(50)')
-
-def getCategorias(url):
+def getGeneros(url):
 		link = openURL(url)
-		link = unicode(link, 'ascii', errors='ignore')
+		
+		soup    = BeautifulSoup(link)
+		generos = soup.find("div", { "class" : "row" }).findAll('a')
+		totG    = len(generos)
+
+		for genero in generos:
+				titG  = genero.text.encode('utf-8', 'ignore')
+				urlG  = base + genero["href"]
+				imgG  = artfolder + 'categorias.jpg'
+
+				addDir(titG, urlG, 11, imgG, True, totG)
+				
+def getAnimesGen(url):
+		link  = openURL(url)
+		link  = unicode(link, 'latin', errors='ignore')
+		
+		urlsA = re.findall('<h2 class="go"><a class="internalUrl" href="(.*?)" title="(.*?)" rel="bookmark" itemprop="name">', link)
+		imgsA = re.findall('<img class="img-responsive" alt=".*?" title=".*?" src="(.*?)" itemprop="image">', link)
+		
+		totA  = len(imgsA)
+		
+		for i in range(totA):
+				titA = urlsA[i][1].encode('ascII', 'ignore')
+				urlA = base + urlsA[i][0]
+				imgA = imgsA[i]
+				
+				addDir(titA, urlA, 31, imgA, True, totA, '')
+				
+		try :
+				proxima = re.findall('href="(.*?)">Avançar</a></li>', link)[0]
+				addDir('Próxima Página >>', base + proxima, 30, artfolder + 'proxpag.jpg')
+		except :
+				pass
+		
+def getLancamentos(url):
+		link = openURL(url)
 		
 		soup = BeautifulSoup(link)
-		categorias = soup.findAll("li", { "class" : "mainList" })
-
-		a = []
+		episodios = soup.findAll("div", {"class" : "well well-sm"})
 		
-		for categoria in categorias:
-				urlTemp  = categoria.a["href"]
-				titTemp  = categoria.a.img["alt"].replace(' category','').encode('ascii', 'ignore')
-				imgTemp  = categoria.a.img["src"]
-				plotTemp = categoria.a["title"].replace('Sinopse:', '').replace('Sinopse; ', '').replace('   ', '').encode('ascii', 'ignore')
-
-				temp = [urlTemp, titTemp, imgTemp, plotTemp] 
-				
-				a.append(temp)
-				
-		total = len(a)
 		
-		for url2, titulo, img, plot in a:
-				titulo = cleanHtml(titulo)
-				addDir(titulo,url2,20,img,True,total,plot)
-			
-		pages = soup.find('ul',{ "id" : "pagination-flickr" }).findAll('a')
-		
-		for prox_pagina in pages:
-				if prox_pagina.text == 'Next':
-						addDir('Próxima Página >>', prox_pagina['href'], 10, artfolder + 'proxpag.jpg')
-				
-		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-		xbmc.executebuiltin('Container.SetViewMode(515)')
-
-def getEpisodios(url):
-		link = openURL(url)
-		link = unicode(link, 'ascii', errors='ignore')
-		
-		soup = BeautifulSoup(link)
-		episodios = soup.findAll("li", { "class" : "mainList" })
-		
-		e = []
+		totE = len(episodios)
 		
 		for episodio in episodios:
-				try:
-						titTemp = episodio.a.img["alt"].encode('ascii', 'ignore')
-						urlTemp = episodio.a["href"]
-						imgTemp = episodio.a.img['src']
-						temp = [titTemp, urlTemp ,imgTemp, ''] 
-						e.append(temp)
+				titE = episodio.a.img["alt"].encode('utf-8', 'ignore')
+				urlE = base + episodio.a["href"]
+				imgE = episodio.a.img['src']
+				addDir(titE, urlE, 100, imgE, False, totE, '')
+				
+		try :
+				pp = re.findall('href="(.*?)">Avançar</a></li>', link)[0]
+				addDir('Próxima Página >>', base + proxima, 20, artfolder + 'proxpag.jpg')
+
+		except :
+				pass
+		
+def getLegendados(url):
+		link  = openURL(url)
+		link  = unicode(link, 'latin', 'ignore')
+		urlsA = re.findall('<h2 class="go"><a class="internalUrl" href="(.*?)" title="(.*?)" rel="bookmark" itemprop="name">', link)
+		imgsA = re.findall('<img class="img-responsive" alt=".*?" title=".*?" src="(.*?)" itemprop="image">', link)
+
+		totA  = len(imgsA)
+		
+		for i in range(totA):
+				titA = urlsA[i][1].encode('ascii', 'ignore')
+				urlA = base + urlsA[i][0]
+				imgA = imgsA[i]
+				
+				addDir(titA, urlA, 31, imgA, True, totA, '')
+				
+		try :
+				proxima = re.findall('href="(.*?)">Avançar</a></li>', link)[0]
+				addDir('Próxima Página >>', base + proxima, 30, artfolder + 'proxpag.jpg')
+		except :
+				pass
+		
+def getEpsLegendados(url):
+		link = openURL(url)
+		soup = BeautifulSoup(link, convertEntities=BeautifulSoup.HTML_ENTITIES)
+		eps  = soup.findAll("div", { "class" : "well well-sm" })
+		
+		plotE = re.findall('<span itemprop="description">(.*?)</span>', link, re.DOTALL|re.MULTILINE)[0]
+		plotE = unicode(BeautifulStoneSoup(plotE,convertEntities=BeautifulStoneSoup.HTML_ENTITIES )).encode('utf-8')
+
+		totE = len(eps)
+		
+		for ep in eps:
+				try :
+						titE = ep.img["title"].encode('ascii', 'ignore')
+						urlE = base + ep.a["href"]
+						imgE = ep.img['src']
+						addDir(titE, urlE, 100, imgE, False, totE, plotE)
 				except:
 						pass
-				
-		total = len(e)
-
-		for titulo, url2, img, plot in e:
-				titulo = cleanHtml(titulo)
-				addDir(titulo, url2, 100, img, False, total, plot)
-				
-		try:
-				pages = soup.find('ul',{ "id" : "pagination-flickr" }).findAll('a')
-				
-				for prox_pagina in pages:
-						if prox_pagina.text == 'Next':
-								addDir('Próxima Página >>',prox_pagina['href'],20,artfolder + 'proxpag.jpg')
-		except:
+						
+		try :
+				proxima = re.findall('href="(.*?)">Avançar</a></li>', link)[0]
+				addDir('Próxima Página >>', base + proxima, 22, artfolder + 'proxpag.jpg')
+		except :
 				pass
-				
-		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-		xbmc.executebuiltin('Container.SetViewMode(500)')
-
+		
 def doPlay(url, name, iconimage):
 		link = openURL(url)
 		
-		jwpKEY = re.findall(r'key=(.*?)"></script>',link)[0]
-		
-		jwpURL = base + 'player/config.php?key=' + jwpKEY
-		
-		jwp = openURL(jwpURL)
-		
-		urlx = re.compile('file: "(.*?).mp4"').findall(jwp)
-		qldx = re.compile('label: "(.*?)"').findall(jwp)
-			
-		urls = []
-		qlds = []
-		
-		toturls = len(urlx)
-		
-		i = 0
-		
-		for i in range(toturls) :
-				if urlx[i] == '' :
-					i += 1	
-				else :
-						urls.append(urlx[i])
-						qlds.append(qldx[i])
-						i += 1
+		qlds = ['Qualidade SD', 'Qualidade HD']
+		urls = re.compile('ipadUrl: "(.*?)",').findall(link)
 		
 		if not urls : return
 		
-		index = xbmcgui.Dialog().select('Selecione a resolução desejada :', qlds)
-
-		if index == -1 : return
-
-		urlTemp = urls[index]
+		index = 0
 		
-		urlVideo = urlTemp.replace('//vid','//iad').replace('cdn','vid') + '.mp4'
+		if len(urls) > 1 :
+				index = xbmcgui.Dialog().select('Selecione a resolução desejada :', qlds)
+				
+				if index == -1 : return
+		
+		urlVideo = urls[index]
 		
 		playlist = xbmc.PlayList(1)
+		
 		playlist.clear()
 		
 		listitem = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
@@ -156,8 +163,9 @@ def doPesquisa():
 		if (keyb.isConfirmed()):
 			search = keyb.getText()
 			busca = urllib.quote(search)
-			url = base + 'search/?search_id=' + str(busca)
-			getEpisodios(url)
+			url = base + '/busca/?search_query=%s&tipo=desc' % busca
+			
+			getLancamentos(url)
 
 ###################################################################################
 
@@ -186,23 +194,6 @@ def openURL(url):
 		link=response.read()
 		response.close()
 		return link
-
-def cleanHtml(dirty):
-    clean = re.sub('&quot;', '\"', dirty)
-    clean = re.sub('&#039;', '\'', clean)
-    clean = re.sub('&#215;', 'x', clean)
-    clean = re.sub('&#038;', '&', clean)
-    clean = re.sub('&#8216;', '\'', clean)
-    clean = re.sub('&#8217;', '\'', clean)
-    clean = re.sub('&#8211;', '-', clean)
-    clean = re.sub('&#8220;', '\"', clean)
-    clean = re.sub('&#8221;', '\"', clean)
-    clean = re.sub('&#8212;', '-', clean)
-    clean = re.sub('&amp;', '&', clean)
-    clean = re.sub("`", '', clean)
-    clean = re.sub('<em>', '[I]', clean)
-    clean = re.sub('</em>', '[/I]', clean)
-    return clean	
 
 ###################################################################################
 
@@ -242,15 +233,14 @@ except : pass
 try    : iconimage=urllib.unquote_plus(params["iconimage"])
 except : pass
 
-#print "Mode     : " + str(mode)
-#print "URL      : " + str(url)
-#print "Name     : " + str(name)
-#print "Iconimage: " + str(iconimage)
-
 if   mode == None : menuPrincipal()
-elif mode == 10   :	getCategorias(url)
-elif mode == 20   :	getEpisodios(url)
-elif mode == 30   : doPesquisa()
+elif mode == 10   :	getGeneros(url)
+elif mode == 11   :	getAnimesGen(url)
+elif mode == 20   :	getLancamentos(url)
+elif mode == 30   :	getLegendados(url)
+elif mode == 31   :	getEpsLegendados(url)
+elif mode == 99   : doPesquisa()
 elif mode == 100  :	doPlay(url, name, iconimage)
-	
+
+xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

@@ -20,7 +20,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.animebrasil" name="Anime Brasil" version="2.0.3" provider-name="AddonBrasil">
+<addon id="plugin.video.animebrasil" name="Anime Brasil" version="2.1.0" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -32,7 +32,7 @@
   <extension point="xbmc.addon.metadata">
     <language>en</language>
     <platform>all</platform>
-    <summary lang="en">Anime Brasil - Animes Legendados Online</summary>
+    <summary lang="en">Animes Legendados Online</summary>
     <description lang="en">No Anime Brasil voce assiste animes legendados com audio original em qualidade SD e HD</description>
     <platform>all</platform>
   </extension>
