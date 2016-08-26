@@ -1,0 +1,13 @@
+﻿<settings>
+	<category label="Visualização">
+		<setting id="enVis"      type="bool"      label="Habilitar Controle de Visualização" default="true" />
+		<setting id="menuVisu"   type="labelenum" label="Visualização de Menu"       values="Icons|List|Low List" default="List" />
+		<setting id="seriesVisu" type="labelenum" label="Visualização de Séries"     values="Icons|Info|Fanart|List|Poster Wrap" default="Info" />
+		<setting id="tempsVisu"  type="labelenum" label="Visualização de Temporadas" values="Icons|List" default="List" />
+		<setting id="epsVisu"    type="labelenum" label="Visualização de Episódios"  values="Icons|Info|List|Low List|Big List" default="Info" />
+	</category>
+
+	<category label="Metadata">
+		<setting id="enableMeta" type="bool" label="Enable Metadata" default="true" />
+	</category>
+</settings>
