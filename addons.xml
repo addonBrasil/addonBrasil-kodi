@@ -307,27 +307,6 @@ ainda pode ver as informacoes ou assistir ao trailer do filme no submenu do addo
   </extension>
 </addon>
 
-<addon id="plugin.video.seriesonlinehd" name="SÃ©ries Online HD" version="1.0.2" provider-name="AddonBrasil">
-  <requires>
-			<import addon="xbmc.python" version="2.1.0"/>
-			<import addon="script.module.urlresolver"   version="2.10.0"/>
-			<import addon="script.common.plugin.cache" version="1.0.0" />
-			<import addon="script.module.simplejson" version="1.0.0"/>
-			<import addon="script.module.parsedom" version="1.0.0"/>
-  </requires>
-
-  <extension point="xbmc.python.pluginsource" library="default.py">
-			<provides>video</provides>
-  </extension>
-
-  <extension point="xbmc.addon.metadata">
-			<summary lang="en">SÃ©ries Online HD</summary>
-			<description lang="en">SÃ©ries recentes e atualizadas periodicamente com qualidade HD</description>
-			<platform>all</platform>
-  </extension>
-
-</addon>
-
 <addon id="plugin.video.sss" name="Super Simple Songs" version="1.0.0" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
