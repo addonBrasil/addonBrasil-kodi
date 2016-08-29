@@ -252,6 +252,26 @@ ainda pode ver as informacoes ou assistir ao trailer do filme no submenu do addo
   </extension>
 </addon>
 
+<addon id="plugin.video.osmelhoresdomundo" name="Os Melhores Do Mundo" version="1.0.0" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.addon.common" version="2.0.0"/>
+    <import addon="plugin.video.youtube" version="5.0.0"/>
+  </requires>
+
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Canal Do Youtube</summary>
+    <description lang="en">Canal do Youtube da Cia. De Comedia Os Melhores Do Mundo agora diretamente no Kodi</description>
+    <platform>all</platform>
+    <forum></forum>
+    <website></website>
+  </extension>
+</addon>
+
 <addon id="plugin.video.portadosfundos" name="Porta dos Fundos" version="2.0.0" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
