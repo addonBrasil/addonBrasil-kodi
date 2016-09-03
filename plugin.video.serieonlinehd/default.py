@@ -19,8 +19,15 @@ icon        = addonfolder + '/icon.png'
 fanart      = addonfolder + '/fanart.jpg'
 base        = 'http://www.serieonlinehd.com'
 
-getVis  = selfAddon.getSetting('enVis')
-getPlot = selfAddon.getSetting('enableMeta')
+try    : os.mkdir(datapath)
+except : pass
+
+try    : getVis  = selfAddon.getSetting('enVis')
+except : getVis = 'false'
+		
+try    : getPlot = selfAddon.getSetting('enableMeta')
+except : getPlot = 'true'
+		
 
 ############################################################################################################
 
@@ -33,7 +40,6 @@ def menuPrincipal():
 		addDir('Configurações'     , base                  , 999, artfolder + 'config.png', 1, False)
 		
 		if getVis == 'true' : setViewMenu()	
-		
 		
 def getCategorias(url):
 		link  = openURL(url)
@@ -50,7 +56,7 @@ def getCategorias(url):
 			imgC = artfolder + 'categorias.png'
 						
 			addDir(titC, urlC, 20, imgC)
-				
+		
 		if getVis == 'true' : setViewMenu()		
 		
 def getSeries(url):
@@ -66,9 +72,12 @@ def getSeries(url):
 		urlS = serie.a["href"]
 		imgS = serie.img["src"]
 		
-		plotS = re.findall('<span class="ttx">(.*?)</span>', str(serie), re.MULTILINE|re.DOTALL)[0]
-		plotS = plotS.replace('<div class="degradado"></div>','').replace('Sinopse e detalhes '+titS,'').strip()
-		
+		if getPlot == 'true' :
+				plotS = re.findall('<span class="ttx">(.*?)</span>', str(serie), re.MULTILINE|re.DOTALL)[0]
+				plotS = plotS.replace('<div class="degradado"></div>','').replace('Sinopse e detalhes '+titS,'').strip()
+		else :
+				plotS = ''
+				
 		addDirS(titS, urlS, 21, imgS, True, totS,plotS)
 			
 	try : 
@@ -92,7 +101,7 @@ def getTemporadas(name,url,iconimage):
 		imgT = iconimage
 		
 		addDirS(titT, urlT, 22, imgT, True, totT)
-			
+
 	if getVis == 'true' : setViewTemps()
 	
 def getEpisodios(name,url,iconimage):
@@ -135,12 +144,16 @@ def getRecentes(url):
 			rtit = re.findall('<a href=".*?">(.*?)</a>.*?<span>(.*?)</span>', str(ep))[0]
 			rtit2 = re.findall('<a href=".*?"><h2>(.*?)</h2></a>', str(ep))[0]
 			rimg = re.findall('<div class="imagen"><a href="(.*?)"><img src=" (.*?)" />', str(ep))[0]
-			rplot = re.findall('<p>(.*?)</p>', str(ep))[0]
 		
 			titEPR = rtit[0] + ' - ' + rtit[1] + " - " + rtit2
 			urlEPR = rimg[0]
 			imgEPR = rimg[1]
-			plotEPR = rplot
+			
+			if getPlot == 'true' :
+				rplot = re.findall('<p>(.*?)</p>', str(ep))[0]
+				plotEPR = rplot
+			else :
+				plotEPR = ''
 				
 			addDirS(titEPR, urlEPR, 100, imgEPR, False, totEPR, plotEPR)
 			
@@ -149,7 +162,7 @@ def getRecentes(url):
 		addDir('Próxima Página >>', proxima, 30, artfolder + 'proxima.png')
 	except : 
 		pass
-			
+
 	if getVis == 'true' : setViewEps()
 	
 def getAnos(url) :
@@ -227,7 +240,7 @@ def player(name,url,iconimage):
 	
 	playlist.add(urlVideo,listitem)
 	
-	xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+	xbmcPlayer = xbmc.Player()
 	xbmcPlayer.play(playlist)
 
 	mensagemprogresso.update(100)
@@ -303,7 +316,9 @@ def addDirE(name,url,mode,iconimage,pasta=True,total=1) :
 		
 def setViewMenu() :
 	skin = xbmc.getSkinDir()
-	opcao = selfAddon.getSetting('menuVisu')
+	
+	try    : opcao = selfAddon.getSetting('menuVisu')
+	except : opcao == 'Icons'
 		
 	if 'skin.confluence' in skin :
 		if   opcao == 'Icons'    : VM = 500
@@ -320,7 +335,9 @@ def setViewMenu() :
 
 def setViewSeries() :
 	skin  = xbmc.getSkinDir()
-	opcao = selfAddon.getSetting('seriesVisu')
+	
+	try    : opcao = selfAddon.getSetting('seriesVisu')
+	except : opcao == 'Icons'
 	
 	if 'skin.confluence' in skin :
 		if   opcao == 'Icons'       : VM = 500
@@ -341,8 +358,10 @@ def setViewSeries() :
 		
 def setViewTemps() :
 	skin  = xbmc.getSkinDir()
-	opcao = selfAddon.getSetting('tempsVisu')
 	
+	try    : opcao = selfAddon.getSetting('tempsVisu')
+	except : opcao == 'Icons'
+
 	if 'skin.confluence' in skin :
 		if   opcao == 'Icons'      : VM = 500
 		elif opcao == 'List'       : VM = 50
@@ -356,7 +375,9 @@ def setViewTemps() :
 	
 def setViewEps() :
 	skin  = xbmc.getSkinDir()
-	opcao = selfAddon.getSetting('epsVisu')
+	
+	try    : opcao = selfAddon.getSetting('epsVisu')
+	except : opcao == 'Icons'
 	
 	if 'skin.confluence' in skin :
 		if   opcao == 'Icons'      : VM = 500

@@ -1,3 +1,7 @@
+03/09/2016 v1.0.1
+- Correcao emergencial para solucionar erro nas visualizacoes
+- Compatibilização para funcionamento do addon para as versões do Kodi 17 ou maior
+
 26/08/2016 v1.0.0
 - Versao inicial do addon by AddonBrasil
 
