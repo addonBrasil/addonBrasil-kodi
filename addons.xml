@@ -75,6 +75,27 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.cinefilmes" name="CineFilmes HD" version="Beta" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+		<import addon="script.module.urlresolver" version="2.10.0"/>
+		<import addon="script.extendedinfo" version="3.1.0"/>
+  </requires>
+
+  <extension point="xbmc.python.pluginsource" library="addon.py">
+    <provides>video</provides>
+  </extension>
+
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Filmes Dublados e Legendados</summary>
+    <description lang="en">No addon CineFilmes HD voce assiste filmes legendados e dublados, separados por categorias.</description>
+		<language>en</language>
+		<platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+		<website>http://www.cinefilmeshd.com/</website>
+  </extension>
+</addon>
+
 <addon id="plugin.video.cinemainterativo" name="Cinema Interativo" version="1.0.5" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
