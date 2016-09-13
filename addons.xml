@@ -367,6 +367,26 @@ ainda pode ver as informacoes ou assistir ao trailer do filme no submenu do addo
   </extension>
 </addon>
 
+<addon id="plugin.video.tvculturadigital" name="TV Cultura Digital" version="1.0.0" provider-name="AddonBrasil">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.addon.common" version="2.0.0"/>
+    <import addon="plugin.video.youtube" />
+  </requires>
+
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Canal Oficial do Youtube</summary>
+    <description lang="en">Canal oficial da TV Cultura no Youtube</description>
+    <platform>all</platform>
+    <forum></forum>
+    <website></website>
+  </extension>
+</addon>
+
 <addon id="repository.addonBrasil" name="AddonBrasil Repository" version="0.0.2" provider-name="AddonBrasil">
 	<extension point="xbmc.addon.repository" name="AddonBrasil Repository">
 		<info compressed="false">http://raw.github.com/addonBrasil/addonBrasil-kodi/master/addons.xml</info>
