@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.arquivobrasil" name="Arquivo Brasil" version="1.4.0" provider-name="AddonBrasil">
+<addon id="plugin.video.arquivobrasil" name="Arquivo Brasil" version="2.0.0" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
-		<import addon="script.module.urlresolver" version="2.10.0"/>
+		<import addon="script.mrknow.urlresolver" version="2016.09.25.1"/>
   </requires>
 	
   <extension point="xbmc.python.pluginsource" library="addon.py">
@@ -13,7 +13,11 @@
     <language>en</language>
     <platform>all</platform>
     <summary lang="en">Arquivo Brasil</summary>
-    <description lang="en">O Arquivo Brasil e um agregador de episodios de novelas, series, programas de variedades, programas jornalísticos e esportivos brasileiros.</description>
+    <description lang="en">
+O Arquivo Brasil e um agregador de episodios de novelas, series, programas de variedades, programas jornalísticos etc...
+
+ATENCAO : Este addon necessita do script MrKnow UrlResolver.
+	</description>
     <platform>all</platform>
   </extension>
 </addon>

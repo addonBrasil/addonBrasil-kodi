@@ -1,3 +1,9 @@
+[B]29/09/2016 - Versao 2.0.0[/B]
+- Total reestruturacao do addon por mudança de site
+- Compatibilizacao do addon com o Kodi 17+ (Krypton)
+- Inclusao do script MrKnow UrlResolver para resolucao das fontes
+- Otimizacao do codigo fonte
+
 [B]14/07/2016 - Versao 1.4.0[/B]
 - Atualizacao emergencial para combater a pirataria de nosso addon
 - Realizada troca do servidor de imagens do addon
