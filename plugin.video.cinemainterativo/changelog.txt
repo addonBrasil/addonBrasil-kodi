@@ -1,3 +1,12 @@
+25/08/2016 v2.0.0
+- Total reestruturacao do addon por mudança dos servidores de filmes do site
+- Compatibilizacao do addon com o Kodi 17+ (Krypton)
+- Utilização da API do The Movie DB para aquisicao de fanarts e sinopses dos filmes
+- Inclusao do script MrKnow UrlResolver para resolucao das fontes dos filmes
+- Remocao do script ExtendedInfo 
+- Opcao para assistir os trailers os filmes agora diretamente pelo youtube
+- Otimizacao do codigo fonte
+
 25/08/2016 v1.0.5
 - Nova correcao para resolucao dos filmes
 - Adicionada a opcao Lancamentos no menu principal
