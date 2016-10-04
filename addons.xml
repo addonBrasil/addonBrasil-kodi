@@ -99,7 +99,7 @@ ATENCAO : Este addon necessita do script MrKnow UrlResolver.
   </extension>
 </addon>
 
-<addon id="plugin.video.cinemainterativo" name="Cinema Interativo" version="2.0.0" provider-name="AddonBrasil">
+<addon id="plugin.video.cinemainterativo" name="Cinema Interativo" version="2.0.1" provider-name="AddonBrasil">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
 		<import addon="script.mrknow.urlresolver" version="2.10.0"/>

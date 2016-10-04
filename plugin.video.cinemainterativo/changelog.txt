@@ -1,4 +1,7 @@
-25/08/2016 v2.0.0
+03/10/2016 v2.0.0
+- Correcao emergencial para o repositorio
+
+01/10/2016 v2.0.0
 - Total reestruturacao do addon por mudança dos servidores de filmes do site
 - Compatibilizacao do addon com o Kodi 17+ (Krypton)
 - Utilização da API do The Movie DB para aquisicao de fanarts e sinopses dos filmes
